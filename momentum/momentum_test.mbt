@@ -340,3 +340,20 @@ test "ultosc validates the period ordering" {
     "invalid period: periods must satisfy p1 <= p2 <= p3",
   )
 }
+
+///|
+test "dx is the raw ratio that adx smooths" {
+  let candles = bars([
+    (2.0, 3.0, 1.0, 2.0, 10.0),
+    (2.0, 5.0, 2.0, 4.0, 20.0),
+    (3.5, 4.0, 3.0, 3.5, 30.0),
+    (3.5, 6.0, 4.0, 5.0, 40.0),
+    (4.0, 5.0, 3.0, 4.0, 50.0),
+  ])
+  let out = @momentum.dx(candles, 2)
+  assert_all_close(out, nan_prefix(2, [100.0, 100.0, 20.0]))
+  // the dx field inside the adx result matches the standalone function
+  let r = @momentum.adx(candles, 2)
+  assert_all_close(r.dx, out)
+  assert_eq(@momentum.dx_lookback(2), 2)
+}

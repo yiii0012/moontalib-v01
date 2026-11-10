@@ -8,6 +8,10 @@ import {
 // Values
 pub fn avg_price(@base.Candles) -> Array[Double] raise @base.TaError
 
+pub fn avgdev(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn avgdev_lookback(Int32) -> Int32
+
 pub fn correl(Array[Double], Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn correl_lookback(Int32) -> Int32
@@ -28,6 +32,10 @@ pub fn med_price(@base.Candles) -> Array[Double] raise @base.TaError
 
 pub fn min(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
+pub fn minmax(Array[Double], Int32) -> MinMaxResult raise @base.TaError
+
+pub fn minmax_lookback(Int32) -> Int32
+
 pub fn sum(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn tsf(Array[Double], Int32) -> Array[Double] raise @base.TaError
@@ -41,6 +49,10 @@ pub fn window_lookback(Int32) -> Int32
 // Errors
 
 // Types and methods
+pub struct MinMaxResult {
+  min : Array[Double]
+  max : Array[Double]
+}
 
 // Type aliases
 

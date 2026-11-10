@@ -21,7 +21,7 @@ moontalib 补上的就是这块拼图。
 - **`moon check` 零警告**：错误处理采用 MoonBit 2026 惯用的
   `-> T raise TaError` 风格，`pub(all)` 构造可见性、`suberror` 错误类型。
 
-## 指标清单（v0.4，50 个公开函数）
+## 指标清单（v0.5，53 个公开函数）
 
 ### overlap —— 均线与通道
 
@@ -58,6 +58,7 @@ moontalib 补上的就是这块拼图。
 | `bop` | 0 | 平衡量：(close − open) / (high − low) |
 | `aroon` | n | 阿隆指标（窗口 period+1 根含当前 K 线；并列极值取最近者） |
 | `aroonosc` | n | 阿隆振荡线：up − down |
+| `dx` | n | 动向指数 DX：ADX 平滑前的原始比率 |
 
 ### volume —— 成交量指标
 
@@ -86,6 +87,8 @@ moontalib 补上的就是这块拼图。
 | `linearreg_slope` / `linearreg_intercept` | n−1 | 滚动最小二乘的斜率 / 截距 |
 | `linearreg` / `linearreg_angle` / `tsf` | n−1 | 回归端点 / 斜率角度（度） / 前瞻一期预测 |
 | `correl` | n−1 | 滚动皮尔逊相关系数（双序列，-1..+1） |
+| `minmax` | n−1 | 滚动极值对（min + max 一次返回） |
+| `avgdev` | n−1 | 滚动平均绝对偏差 |
 
 每个指标都配有 `xxx_lookback` 辅助函数，返回输出的前导 NaN 个数（`adx`
 等复合指标除外，见各函数文档）。

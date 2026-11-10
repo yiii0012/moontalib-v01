@@ -5,6 +5,7 @@ import {
   "yiii0012/moontalib/base",
   "yiii0012/moontalib/momentum",
   "yiii0012/moontalib/overlap",
+  "yiii0012/moontalib/statistic",
 }
 
 // Values
@@ -24,6 +25,8 @@ pub fn atr(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 
 pub fn avg_price(@base.Candles) -> Array[Double] raise @base.TaError
 
+pub fn avgdev(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
 pub fn bbands(Array[Double], Int32, ndev~ : Double) -> @overlap.BBands raise @base.TaError
 
 pub fn bop(@base.Candles) -> Array[Double] raise @base.TaError
@@ -35,6 +38,8 @@ pub fn cmo(Array[Double], Int32) -> Array[Double] raise @base.TaError
 pub fn correl(Array[Double], Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn dema(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn dx(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 
 pub fn ema(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
@@ -63,6 +68,8 @@ pub fn midpoint(Array[Double], Int32) -> Array[Double] raise @base.TaError
 pub fn midprice(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 
 pub fn min(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn minmax(Array[Double], Int32) -> @statistic.MinMaxResult raise @base.TaError
 
 pub fn mom(Array[Double], Int32) -> Array[Double] raise @base.TaError
 

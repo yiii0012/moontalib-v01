@@ -167,3 +167,21 @@ test "correl yields NaN on flat windows and validates lengths" {
     "mismatched input lengths: data1 and data2 must have equal lengths",
   )
 }
+
+///|
+test "minmax pairs the rolling extremes" {
+  let r = @statistic.minmax([1.0, 2.0, 3.0, 4.0, 5.0], 3)
+  assert_all_close(r.min, nan_prefix(2, [1.0, 2.0, 3.0]))
+  assert_all_close(r.max, nan_prefix(2, [3.0, 4.0, 5.0]))
+  assert_eq(@statistic.minmax_lookback(3), 2)
+}
+
+///|
+test "avgdev is the mean absolute deviation" {
+  let out = @statistic.avgdev([1.0, 2.0, 3.0, 4.0, 5.0], 3)
+  assert_all_close(
+    out,
+    nan_prefix(2, [0.6666666666666666, 0.6666666666666666, 0.6666666666666666]),
+  )
+  assert_eq(@statistic.avgdev_lookback(3), 2)
+}

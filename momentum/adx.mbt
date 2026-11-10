@@ -1,12 +1,14 @@
 // Average Directional Index with +DI / -DI (J. Welles Wilder).
 
 ///|
-/// ADX decomposition: the ADX trend-strength line plus the +DI and -DI
-/// directional indicators. All three arrays have the input length.
+/// ADX decomposition: the ADX trend-strength line, the +DI and -DI
+/// directional indicators, and the raw DX line that ADX smooths. All four
+/// arrays have the input length.
 pub struct AdxResult {
   adx : Array[Double]
   plus_di : Array[Double]
   minus_di : Array[Double]
+  dx : Array[Double]
 }
 
 ///|
@@ -45,25 +47,13 @@ pub fn adx_lookback(period : Int32) -> Int32 {
 }
 
 ///|
-/// Average Directional Index.
-///
-/// True range and directional movement are accumulated with Wilder's
-/// smoothing (`s = s - s / period + current`, seeded by a simple sum over
-/// the first `period` changes). +DI/-DI are valid from index `period`, and
-/// ADX (a Wilder average of the DX) from index `2 * period - 1`. A zero
-/// smoothed true range (perfectly flat window) maps the DI lines to 0.
-pub fn adx(
+/// Wilder-smoothed +DI / -DI lines, valid from index `period`. Shared core
+/// of `adx` and `dx`.
+fn wilder_di_lines(
   candles : @base.Candles,
   period : Int32,
-) -> AdxResult raise @base.TaError {
-  @base.validate_candles(candles)
-  if period < 2 {
-    raise @base.InvalidPeriod("ADX period must be at least 2, got \{period}")
-  }
+) -> (Array[Double], Array[Double]) {
   let n = candles.close.length()
-  if period > n {
-    raise @base.NotEnoughData("period \{period} exceeds input length \{n}")
-  }
   let pd = period.to_double()
   let plus_di : Array[Double] = []
   let minus_di : Array[Double] = []
@@ -109,7 +99,17 @@ pub fn adx(
       minus_di[i] = if s_tr == 0.0 { 0.0 } else { 100.0 * s_m / s_tr }
     }
   }
-  // DX wherever both DI lines are available.
+  (plus_di, minus_di)
+}
+
+///|
+/// DX from the smoothed DI lines: `100 * |+DI - -DI| / (+DI + -DI)` wherever
+/// both lines are available; a zero sum reads 0.
+fn dx_from_di(
+  n : Int32,
+  plus_di : Array[Double],
+  minus_di : Array[Double],
+) -> Array[Double] {
   let dx : Array[Double] = []
   for i in 0..<n {
     let p = plus_di[i]
@@ -125,12 +125,38 @@ pub fn adx(
       }
     }
   }
+  dx
+}
+
+///|
+/// Average Directional Index.
+///
+/// True range and directional movement are accumulated with Wilder's
+/// smoothing (`s = s - s / period + current`, seeded by a simple sum over
+/// the first `period` changes). +DI/-DI are valid from index `period`, and
+/// ADX (a Wilder average of the DX) from index `2 * period - 1`. A zero
+/// smoothed true range (perfectly flat window) maps the DI lines to 0.
+pub fn adx(
+  candles : @base.Candles,
+  period : Int32,
+) -> AdxResult raise @base.TaError {
+  @base.validate_candles(candles)
+  if period < 2 {
+    raise @base.InvalidPeriod("ADX period must be at least 2, got \{period}")
+  }
+  let n = candles.close.length()
+  if period > n {
+    raise @base.NotEnoughData("period \{period} exceeds input length \{n}")
+  }
+  let pd = period.to_double()
+  let (plus_di, minus_di) = wilder_di_lines(candles, period)
+  let dx = dx_from_di(n, plus_di, minus_di)
   let adx_out : Array[Double] = []
   for _ in 0..<n {
     adx_out.push(@base.nan())
   }
   let first = 2 * period - 1
-  if seeded && n > first {
+  if n > first {
     let mut sum = 0.0
     let mut ok = true
     for i in period..<(first + 1) {
@@ -153,5 +179,30 @@ pub fn adx(
       }
     }
   }
-  { adx: adx_out, plus_di, minus_di, }
+  { adx: adx_out, plus_di, minus_di, dx, }
+}
+
+///|
+/// Number of leading NaN values produced by `dx` for the given period.
+pub fn dx_lookback(period : Int32) -> Int32 {
+  period
+}
+
+///|
+/// Directional Movement Index (DX): the raw `100 * |+DI - -DI| / (+DI + -DI)`
+/// ratio that `adx` smooths, valid from index `period`.
+pub fn dx(
+  candles : @base.Candles,
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @base.validate_candles(candles)
+  if period < 2 {
+    raise @base.InvalidPeriod("ADX period must be at least 2, got \{period}")
+  }
+  let n = candles.close.length()
+  if period > n {
+    raise @base.NotEnoughData("period \{period} exceeds input length \{n}")
+  }
+  let (plus_di, minus_di) = wilder_di_lines(candles, period)
+  dx_from_di(n, plus_di, minus_di)
 }

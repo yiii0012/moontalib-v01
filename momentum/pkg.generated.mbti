@@ -30,6 +30,10 @@ pub fn cmo(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn cmo_lookback(Int32) -> Int32
 
+pub fn dx(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
+pub fn dx_lookback(Int32) -> Int32
+
 pub fn macd(Array[Double], Int32, Int32, Int32) -> Macd raise @base.TaError
 
 pub fn macd_lookback(Int32, Int32) -> Int32
@@ -73,6 +77,7 @@ pub struct AdxResult {
   adx : Array[Double]
   plus_di : Array[Double]
   minus_di : Array[Double]
+  dx : Array[Double]
 }
 
 pub struct AroonResult {

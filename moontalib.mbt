@@ -278,6 +278,15 @@ pub fn aroonosc(
 }
 
 ///|
+/// Directional Movement Index (DX): the raw ratio that  smooths.
+pub fn dx(
+  candles : @base.Candles,
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @momentum.dx(candles, period)
+}
+
+///|
 /// Ultimate Oscillator: `100 * (4*avg1 + 2*avg2 + avg3) / 7` over three
 /// buying-pressure ratios (defaults 7 / 14 / 28).
 pub fn ultosc(
@@ -478,4 +487,22 @@ pub fn correl(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @statistic.correl(data1, data2, period)
+}
+
+///|
+/// Rolling minimum and maximum over a window, in one result.
+pub fn minmax(
+  data : Array[Double],
+  period : Int32,
+) -> @statistic.MinMaxResult raise @base.TaError {
+  @statistic.minmax(data, period)
+}
+
+///|
+/// Mean absolute deviation over a rolling window.
+pub fn avgdev(
+  data : Array[Double],
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @statistic.avgdev(data, period)
 }

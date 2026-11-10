@@ -181,3 +181,114 @@ pub fn sum(
   }
   out
 }
+
+///|
+/// Rolling extremes over a window: min and max arrays of equal length.
+/// A NaN inside the window yields NaN for both.
+pub struct MinMaxResult {
+  min : Array[Double]
+  max : Array[Double]
+}
+
+///|
+/// Number of leading NaN values produced by `minmax` for the given period.
+pub fn minmax_lookback(period : Int32) -> Int32 {
+  period - 1
+}
+
+///|
+/// Rolling minimum and maximum over a window of `period` values, computed in
+/// a single pass.
+pub fn minmax(
+  data : Array[Double],
+  period : Int32,
+) -> MinMaxResult raise @base.TaError {
+  @base.validate_series(data, period)
+  let n = data.length()
+  let min : Array[Double] = []
+  let max : Array[Double] = []
+  for i in 0..<n {
+    if i < period - 1 {
+      min.push(@base.nan())
+      max.push(@base.nan())
+      continue
+    }
+    let mut best_min = 0.0
+    let mut best_max = 0.0
+    let mut first = true
+    let mut valid = true
+    for j in (i - period + 1)..<(i + 1) {
+      let v = data[j]
+      if @base.is_nan(v) {
+        valid = false
+        break
+      }
+      if first {
+        best_min = v
+        best_max = v
+        first = false
+      } else {
+        if v < best_min {
+          best_min = v
+        }
+        if v > best_max {
+          best_max = v
+        }
+      }
+    }
+    if valid {
+      min.push(best_min)
+      max.push(best_max)
+    } else {
+      min.push(@base.nan())
+      max.push(@base.nan())
+    }
+  }
+  { min, max, }
+}
+
+///|
+/// Number of leading NaN values produced by `avgdev` for the given period.
+pub fn avgdev_lookback(period : Int32) -> Int32 {
+  period - 1
+}
+
+///|
+/// Mean absolute deviation over a rolling window:
+/// `sum(|x - mean|) / period`. A flat window reads 0; a NaN inside the
+/// window yields NaN.
+pub fn avgdev(
+  data : Array[Double],
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @base.validate_series(data, period)
+  let n = data.length()
+  let out : Array[Double] = []
+  for i in 0..<n {
+    if i < period - 1 {
+      out.push(@base.nan())
+      continue
+    }
+    let mut sum = 0.0
+    let mut valid = true
+    for j in (i - period + 1)..<(i + 1) {
+      let v = data[j]
+      if @base.is_nan(v) {
+        valid = false
+        break
+      }
+      sum += v
+    }
+    if !valid {
+      out.push(@base.nan())
+      continue
+    }
+    let mean = sum / period.to_double()
+    let mut dev = 0.0
+    for j in (i - period + 1)..<(i + 1) {
+      dev += (data[j] - mean).abs()
+    }
+    out.push(dev / period.to_double())
+  }
+  out
+}
