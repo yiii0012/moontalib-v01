@@ -283,41 +283,12 @@ pub fn midpoint(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @base.validate_series(data, period)
-  let n = data.length()
+  let rmax = @base.rolling_max(data, period)
+  let rmin = @base.rolling_min(data, period)
+  let n = rmax.length()
   let out : Array[Double] = []
   for i in 0..<n {
-    if i < period - 1 {
-      out.push(@base.nan())
-      continue
-    }
-    let mut best_max = 0.0
-    let mut best_min = 0.0
-    let mut first = true
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let v = data[j]
-      if @base.is_nan(v) {
-        valid = false
-        break
-      }
-      if first {
-        best_max = v
-        best_min = v
-        first = false
-      } else {
-        if v > best_max {
-          best_max = v
-        }
-        if v < best_min {
-          best_min = v
-        }
-      }
-    }
-    if valid {
-      out.push((best_max + best_min) / 2.0)
-    } else {
-      out.push(@base.nan())
-    }
+    out.push((rmax[i] + rmin[i]) / 2.0)
   }
   out
 }
