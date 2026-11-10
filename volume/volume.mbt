@@ -76,47 +76,41 @@ pub fn mfi(
   }
   // Signed money flow per bar, computed once: typical price times volume,
   // positive on an up-tick of the typical price, negative on a down-tick,
-  // zero on a flat tick; NaN when any input component is NaN.
-  let flows : Array[Double] = []
+  // zero on a flat tick; NaN when any input component is NaN. Positive and
+  // negative parts are kept in separate series so each window reads two
+  // O(n) rolling sums.
+  let pos_flow : Array[Double] = []
+  let neg_flow : Array[Double] = []
   for j in 0..<n {
     let cur = tp[j]
     let prev = if j == 0 { @base.nan() } else { tp[j - 1] }
     let v = candles.volume[j]
     if @base.is_nan(cur) || @base.is_nan(prev) || @base.is_nan(v) {
-      flows.push(@base.nan())
+      pos_flow.push(@base.nan())
+      neg_flow.push(@base.nan())
     } else if cur > prev {
-      flows.push(cur * v)
+      pos_flow.push(cur * v)
+      neg_flow.push(0.0)
     } else if cur < prev {
-      flows.push(-(cur * v))
+      pos_flow.push(0.0)
+      neg_flow.push(cur * v)
     } else {
-      flows.push(0.0)
+      pos_flow.push(0.0)
+      neg_flow.push(0.0)
     }
   }
+  let sum_pos = @base.rolling_sum(pos_flow, period)
+  let sum_neg = @base.rolling_sum(neg_flow, period)
   for _ in 0..<period {
     out.push(@base.nan())
   }
   for i in period..<n {
-    let mut pos = 0.0
-    let mut neg = 0.0
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let f = flows[j]
-      if @base.is_nan(f) {
-        valid = false
-        break
-      }
-      if f > 0.0 {
-        pos += f
-      } else {
-        neg -= f
-      }
-    }
-    if !valid {
+    if @base.is_nan(sum_pos[i]) || @base.is_nan(sum_neg[i]) {
       out.push(@base.nan())
-    } else if neg == 0.0 {
+    } else if sum_neg[i] == 0.0 {
       out.push(100.0)
     } else {
-      out.push(100.0 - 100.0 / (1.0 + pos / neg))
+      out.push(100.0 - 100.0 / (1.0 + sum_pos[i] / sum_neg[i]))
     }
   }
   out
