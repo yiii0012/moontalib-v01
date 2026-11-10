@@ -9,8 +9,7 @@ pub struct AroonResult {
 }
 
 ///|
-/// Number of leading NaN values produced by `aroon` for the given period:
-/// `period` (the window covers `period + 1` bars including the current one).
+/// Number of leading NaN values produced by `aroon` for the given period.
 pub fn aroon_lookback(period : Int32) -> Int32 {
   period
 }
@@ -23,6 +22,7 @@ pub fn aroon_lookback(period : Int32) -> Int32 {
 /// `100 * (period - bars_since_highest_high) / period` and `down` mirrors it
 /// with the lowest low; when several bars share the extreme, the most recent
 /// occurrence wins. A window containing NaN yields NaN for that position.
+/// Computed in O(n) via the base rolling argmax/argmin.
 pub fn aroon(
   candles : @base.Candles,
   period : Int32,
@@ -32,6 +32,12 @@ pub fn aroon(
     raise @base.InvalidPeriod("period must be positive, got \{period}")
   }
   let n = candles.close.length()
+  if period + 1 > n {
+    raise @base.NotEnoughData("period \{period} exceeds input length \{n}")
+  }
+  let hh_idx = @base.rolling_argmax(candles.high, period + 1)
+  let ll_idx = @base.rolling_argmin(candles.low, period + 1)
+  let pd = period.to_double()
   let down : Array[Double] = []
   let up : Array[Double] = []
   for i in 0..<n {
@@ -40,35 +46,15 @@ pub fn aroon(
       up.push(@base.nan())
       continue
     }
-    // Scan window indices `i - period ..= i`; `>=` / `<=` make the most
-    // recent extreme win on ties.
-    let mut hh_idx = -1
-    let mut ll_idx = -1
-    let mut valid = true
-    for j in (i - period)..<(i + 1) {
-      let h = candles.high[j]
-      let l = candles.low[j]
-      if @base.is_nan(h) || @base.is_nan(l) {
-        valid = false
-        break
-      }
-      if hh_idx == -1 || h >= candles.high[hh_idx] {
-        hh_idx = j
-      }
-      if ll_idx == -1 || l <= candles.low[ll_idx] {
-        ll_idx = j
-      }
-    }
-    if !valid {
+    let ih = hh_idx[i]
+    let il = ll_idx[i]
+    if ih == -1 || il == -1 {
       down.push(@base.nan())
       up.push(@base.nan())
       continue
     }
-    let pd = period.to_double()
-    let since_hh = i - hh_idx
-    let since_ll = i - ll_idx
-    up.push(100.0 * (period - since_hh).to_double() / pd)
-    down.push(100.0 * (period - since_ll).to_double() / pd)
+    up.push(100.0 * (period - (i - ih)).to_double() / pd)
+    down.push(100.0 * (period - (i - il)).to_double() / pd)
   }
   { down, up, }
 }
