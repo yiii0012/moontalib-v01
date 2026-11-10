@@ -76,36 +76,7 @@ pub fn max(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @base.validate_series(data, period)
-  let n = data.length()
-  let out : Array[Double] = []
-  for i in 0..<n {
-    if i < period - 1 {
-      out.push(@base.nan())
-      continue
-    }
-    let mut best = 0.0
-    let mut first = true
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let v = data[j]
-      if @base.is_nan(v) {
-        valid = false
-        break
-      }
-      if first {
-        best = v
-        first = false
-      } else if v > best {
-        best = v
-      }
-    }
-    if valid {
-      out.push(best)
-    } else {
-      out.push(@base.nan())
-    }
-  }
-  out
+  @base.rolling_max(data, period)
 }
 
 ///|
@@ -116,36 +87,7 @@ pub fn min(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @base.validate_series(data, period)
-  let n = data.length()
-  let out : Array[Double] = []
-  for i in 0..<n {
-    if i < period - 1 {
-      out.push(@base.nan())
-      continue
-    }
-    let mut best = 0.0
-    let mut first = true
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let v = data[j]
-      if @base.is_nan(v) {
-        valid = false
-        break
-      }
-      if first {
-        best = v
-        first = false
-      } else if v < best {
-        best = v
-      }
-    }
-    if valid {
-      out.push(best)
-    } else {
-      out.push(@base.nan())
-    }
-  }
-  out
+  @base.rolling_min(data, period)
 }
 
 ///|
@@ -204,46 +146,8 @@ pub fn minmax(
   period : Int32,
 ) -> MinMaxResult raise @base.TaError {
   @base.validate_series(data, period)
-  let n = data.length()
-  let min : Array[Double] = []
-  let max : Array[Double] = []
-  for i in 0..<n {
-    if i < period - 1 {
-      min.push(@base.nan())
-      max.push(@base.nan())
-      continue
-    }
-    let mut best_min = 0.0
-    let mut best_max = 0.0
-    let mut first = true
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let v = data[j]
-      if @base.is_nan(v) {
-        valid = false
-        break
-      }
-      if first {
-        best_min = v
-        best_max = v
-        first = false
-      } else {
-        if v < best_min {
-          best_min = v
-        }
-        if v > best_max {
-          best_max = v
-        }
-      }
-    }
-    if valid {
-      min.push(best_min)
-      max.push(best_max)
-    } else {
-      min.push(@base.nan())
-      max.push(@base.nan())
-    }
-  }
+  let min = @base.rolling_min(data, period)
+  let max = @base.rolling_max(data, period)
   { min, max, }
 }
 
