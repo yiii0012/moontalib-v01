@@ -98,30 +98,7 @@ pub fn sum(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @base.validate_series(data, period)
-  let n = data.length()
-  let out : Array[Double] = []
-  for i in 0..<n {
-    if i < period - 1 {
-      out.push(@base.nan())
-      continue
-    }
-    let mut acc = 0.0
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let v = data[j]
-      if @base.is_nan(v) {
-        valid = false
-        break
-      }
-      acc += v
-    }
-    if valid {
-      out.push(acc)
-    } else {
-      out.push(@base.nan())
-    }
-  }
-  out
+  @base.rolling_sum(data, period)
 }
 
 ///|
@@ -166,28 +143,15 @@ pub fn avgdev(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @base.validate_series(data, period)
+  let s1 = @base.rolling_sum(data, period)
   let n = data.length()
   let out : Array[Double] = []
   for i in 0..<n {
-    if i < period - 1 {
+    if i < period - 1 || @base.is_nan(s1[i]) {
       out.push(@base.nan())
       continue
     }
-    let mut sum = 0.0
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let v = data[j]
-      if @base.is_nan(v) {
-        valid = false
-        break
-      }
-      sum += v
-    }
-    if !valid {
-      out.push(@base.nan())
-      continue
-    }
-    let mean = sum / period.to_double()
+    let mean = s1[i] / period.to_double()
     let mut dev = 0.0
     for j in (i - period + 1)..<(i + 1) {
       dev += (data[j] - mean).abs()
