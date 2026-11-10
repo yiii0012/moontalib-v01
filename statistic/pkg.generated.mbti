@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "yiii0012/moontalib/statistic"
+
+import {
+  "yiii0012/moontalib/base",
+}
+
+// Values
+pub fn avg_price(@base.Candles) -> Array[Double] raise @base.TaError
+
+pub fn max(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn med_price(@base.Candles) -> Array[Double] raise @base.TaError
+
+pub fn min(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn sum(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn typ_price(@base.Candles) -> Array[Double] raise @base.TaError
+
+pub fn wcl_price(@base.Candles) -> Array[Double] raise @base.TaError
+
+pub fn window_lookback(Int32) -> Int32
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

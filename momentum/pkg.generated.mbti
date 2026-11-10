@@ -1,0 +1,88 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "yiii0012/moontalib/momentum"
+
+import {
+  "yiii0012/moontalib/base",
+}
+
+// Values
+pub fn adx(@base.Candles, Int32) -> AdxResult raise @base.TaError
+
+pub fn adx_lookback(Int32) -> Int32
+
+pub fn apo(Array[Double], Int32, Int32, ma_type~ : @base.MAType) -> Array[Double] raise @base.TaError
+
+pub fn aroon(@base.Candles, Int32) -> AroonResult raise @base.TaError
+
+pub fn aroon_lookback(Int32) -> Int32
+
+pub fn bop(@base.Candles) -> Array[Double] raise @base.TaError
+
+pub fn cci(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
+pub fn cci_lookback(Int32) -> Int32
+
+pub fn cmo(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn cmo_lookback(Int32) -> Int32
+
+pub fn macd(Array[Double], Int32, Int32, Int32) -> Macd raise @base.TaError
+
+pub fn macd_lookback(Int32, Int32) -> Int32
+
+pub fn mom(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn mom_lookback(Int32) -> Int32
+
+pub fn ppo(Array[Double], Int32, Int32, ma_type~ : @base.MAType) -> Array[Double] raise @base.TaError
+
+pub fn roc(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn roc_lookback(Int32) -> Int32
+
+pub fn rsi(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn rsi_lookback(Int32) -> Int32
+
+pub fn stoch(@base.Candles, Int32, k_slowing~ : Int32, d_period~ : Int32) -> Stoch raise @base.TaError
+
+pub fn stoch_lookback(Int32, Int32, Int32) -> Int32
+
+pub fn stochf(@base.Candles, Int32, d_period~ : Int32) -> Stoch raise @base.TaError
+
+pub fn trix(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn trix_lookback(Int32) -> Int32
+
+pub fn willr(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
+pub fn willr_lookback(Int32) -> Int32
+
+// Errors
+
+// Types and methods
+pub struct AdxResult {
+  adx : Array[Double]
+  plus_di : Array[Double]
+  minus_di : Array[Double]
+}
+
+pub struct AroonResult {
+  down : Array[Double]
+  up : Array[Double]
+}
+
+pub struct Macd {
+  macd : Array[Double]
+  signal : Array[Double]
+  hist : Array[Double]
+}
+
+pub struct Stoch {
+  k : Array[Double]
+  d : Array[Double]
+}
+
+// Type aliases
+
+// Traits

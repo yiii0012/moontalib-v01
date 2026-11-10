@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "yiii0012/moontalib/volume"
+
+import {
+  "yiii0012/moontalib/base",
+}
+
+// Values
+pub fn ad(@base.Candles) -> Array[Double] raise @base.TaError
+
+pub fn adosc(@base.Candles, Int32, Int32) -> Array[Double] raise @base.TaError
+
+pub fn mfi(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
+pub fn mfi_lookback(Int32) -> Int32
+
+pub fn obv(@base.Candles) -> Array[Double] raise @base.TaError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

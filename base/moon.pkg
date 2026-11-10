@@ -1,0 +1,4 @@
+// `Candle`, `Candles`, `MAType` and `TaError` are data-model types consumed
+// across packages; the "never constructed / never used here" warnings (9, 6)
+// are cross-package usage artifacts.
+warnings = "-9-6"

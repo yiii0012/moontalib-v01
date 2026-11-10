@@ -1,0 +1,58 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "yiii0012/moontalib/overlap"
+
+import {
+  "yiii0012/moontalib/base",
+}
+
+// Values
+pub fn bbands(Array[Double], Int32, ndev~ : Double) -> BBands raise @base.TaError
+
+pub fn bbands_lookback(Int32) -> Int32
+
+pub fn dema(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn dema_lookback(Int32) -> Int32
+
+pub fn ema(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn ema_from(Array[Double], Int32, Int32) -> Array[Double]
+
+pub fn ema_lookback(Int32) -> Int32
+
+pub fn hma(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn hma_lookback(Int32) -> Int32
+
+pub fn midpoint(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn midpoint_lookback(Int32) -> Int32
+
+pub fn moving_average(Array[Double], Int32, ma_type~ : @base.MAType) -> Array[Double] raise @base.TaError
+
+pub fn sma(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn sma_lookback(Int32) -> Int32
+
+pub fn tema(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn tema_lookback(Int32) -> Int32
+
+pub fn vwma(Array[Double], Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn wma(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn wma_lookback(Int32) -> Int32
+
+// Errors
+
+// Types and methods
+pub struct BBands {
+  upper : Array[Double]
+  middle : Array[Double]
+  lower : Array[Double]
+}
+
+// Type aliases
+
+// Traits

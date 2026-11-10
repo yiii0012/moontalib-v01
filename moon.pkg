@@ -1,0 +1,12 @@
+import {
+  "yiii0012/moontalib/base",
+  "yiii0012/moontalib/overlap",
+  "yiii0012/moontalib/momentum",
+  "yiii0012/moontalib/volume",
+  "yiii0012/moontalib/volatility",
+  "yiii0012/moontalib/statistic",
+}
+
+import {
+  "yiii0012/moontalib/base",
+} for "test"

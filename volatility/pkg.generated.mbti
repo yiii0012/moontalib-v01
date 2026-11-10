@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "yiii0012/moontalib/volatility"
+
+import {
+  "yiii0012/moontalib/base",
+}
+
+// Values
+pub fn atr(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
+pub fn atr_lookback(Int32) -> Int32
+
+pub fn natr(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
+pub fn stddev(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn stddev_lookback(Int32) -> Int32
+
+pub fn tr_range(@base.Candles) -> Array[Double] raise @base.TaError
+
+pub fn variance(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn variance_lookback(Int32) -> Int32
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
