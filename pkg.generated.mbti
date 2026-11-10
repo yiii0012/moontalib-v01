@@ -18,6 +18,8 @@ pub fn apo(Array[Double], Int32, Int32, ma_type~ : @base.MAType) -> Array[Double
 
 pub fn aroon(@base.Candles, Int32) -> @momentum.AroonResult raise @base.TaError
 
+pub fn aroonosc(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
 pub fn atr(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 
 pub fn avg_price(@base.Candles) -> Array[Double] raise @base.TaError
@@ -29,6 +31,8 @@ pub fn bop(@base.Candles) -> Array[Double] raise @base.TaError
 pub fn cci(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 
 pub fn cmo(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn correl(Array[Double], Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn dema(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
@@ -93,6 +97,8 @@ pub fn trix(Array[Double], Int32) -> Array[Double] raise @base.TaError
 pub fn tsf(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn typ_price(@base.Candles) -> Array[Double] raise @base.TaError
+
+pub fn ultosc(@base.Candles, p1~ : Int32, p2~ : Int32, p3~ : Int32) -> Array[Double] raise @base.TaError
 
 pub fn variance(Array[Double], Int32) -> Array[Double] raise @base.TaError
 

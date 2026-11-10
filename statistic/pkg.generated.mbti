@@ -8,6 +8,10 @@ import {
 // Values
 pub fn avg_price(@base.Candles) -> Array[Double] raise @base.TaError
 
+pub fn correl(Array[Double], Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn correl_lookback(Int32) -> Int32
+
 pub fn linearreg(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn linearreg_angle(Array[Double], Int32) -> Array[Double] raise @base.TaError

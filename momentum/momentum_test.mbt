@@ -294,3 +294,49 @@ test "aroon breaks ties towards the most recent extreme" {
   assert_all_close(r.up, nan_prefix(3, [100.0]))
   assert_all_close(r.down, nan_prefix(3, [100.0]))
 }
+
+///|
+test "aroonosc is the aroon up-down spread" {
+  let candles = bars([
+    (1.0, 1.0, 1.0, 1.0, 10.0),
+    (1.0, 3.0, 2.0, 2.0, 20.0),
+    (2.0, 2.0, 1.0, 1.5, 30.0),
+    (2.0, 5.0, 3.0, 4.0, 40.0),
+    (4.0, 4.0, 2.0, 3.0, 50.0),
+    (5.0, 6.0, 2.0, 5.0, 60.0),
+  ])
+  let out = @momentum.aroonosc(candles, 3)
+  assert_all_close(
+    out,
+    nan_prefix(3, [33.33333333333333, 33.33333333333333, 100.0]),
+  )
+  assert_eq(@momentum.aroonosc_lookback(3), 3)
+}
+
+///|
+test "ultosc blends three buying-pressure ratios" {
+  let candles = bars([
+    (1.0, 2.0, 1.0, 1.5, 10.0),
+    (2.0, 3.0, 1.0, 2.5, 20.0),
+    (2.5, 3.0, 2.0, 2.0, 30.0),
+    (2.0, 4.0, 2.0, 3.5, 40.0),
+    (3.5, 5.0, 3.0, 4.0, 50.0),
+    (4.0, 4.0, 2.0, 3.0, 60.0),
+  ])
+  let out = @momentum.ultosc(candles, p1=2, p2=3, p3=4)
+  assert_all_close(out, nan_prefix(4, [58.16326530612245, 52.38095238095238]))
+  assert_eq(@momentum.ultosc_lookback(4), 4)
+}
+
+///|
+test "ultosc validates the period ordering" {
+  assert_eq(
+    err_msg(() => @momentum.ultosc(bars([]), p1=3, p2=2, p3=1)),
+    "input series is empty",
+  )
+  let one = bars([(1.0, 3.0, 1.0, 2.0, 10.0)])
+  assert_eq(
+    err_msg(() => @momentum.ultosc(one, p1=3, p2=2, p3=1)),
+    "invalid period: periods must satisfy p1 <= p2 <= p3",
+  )
+}

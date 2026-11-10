@@ -72,3 +72,31 @@ pub fn aroon(
   }
   { down, up, }
 }
+
+///|
+/// Number of leading NaN values produced by `aroonosc` for the given period.
+pub fn aroonosc_lookback(period : Int32) -> Int32 {
+  period
+}
+
+///|
+/// Aroon Oscillator: `up - down`. Ranges from -100 (downtrend) to +100
+/// (uptrend) with the same window rules as `aroon`.
+pub fn aroonosc(
+  candles : @base.Candles,
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  let r = aroon(candles, period)
+  let n = candles.close.length()
+  let out : Array[Double] = []
+  for i in 0..<n {
+    let u = r.up[i]
+    let d = r.down[i]
+    if @base.is_nan(u) || @base.is_nan(d) {
+      out.push(@base.nan())
+    } else {
+      out.push(u - d)
+    }
+  }
+  out
+}

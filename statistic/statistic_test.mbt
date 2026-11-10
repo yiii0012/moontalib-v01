@@ -145,3 +145,25 @@ test "linear regression validates its inputs" {
     "invalid period: period must be at least 2, got 1",
   )
 }
+
+///|
+test "correl is the rolling pearson coefficient" {
+  let a = [1.0, 2.0, 3.0, 4.0, 5.0]
+  let rising = @statistic.correl(a, [2.0, 4.0, 6.0, 8.0, 10.0], 3)
+  assert_all_close(rising, nan_prefix(2, [1.0, 1.0, 1.0]))
+  let falling = @statistic.correl(a, [10.0, 8.0, 6.0, 4.0, 2.0], 3)
+  assert_all_close(falling, nan_prefix(2, [-1.0, -1.0, -1.0]))
+  let partial = @statistic.correl([1.0, 2.0, 3.0], [1.0, 3.0, 2.0], 3)
+  assert_all_close(partial, nan_prefix(2, [0.5]))
+  assert_eq(@statistic.correl_lookback(3), 2)
+}
+
+///|
+test "correl yields NaN on flat windows and validates lengths" {
+  let flat = @statistic.correl([2.0, 2.0, 2.0], [1.0, 2.0, 3.0], 3)
+  assert_all_close(flat, nan_prefix(3, []))
+  assert_eq(
+    err_msg(() => @statistic.correl([1.0, 2.0, 3.0], [1.0, 2.0], 2)),
+    "mismatched input lengths: data1 and data2 must have equal lengths",
+  )
+}

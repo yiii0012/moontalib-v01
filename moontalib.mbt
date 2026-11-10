@@ -268,6 +268,27 @@ pub fn aroon(
   @momentum.aroon(candles, period)
 }
 
+///|
+/// Aroon Oscillator: `up - down`, ranges from -100 to +100.
+pub fn aroonosc(
+  candles : @base.Candles,
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @momentum.aroonosc(candles, period)
+}
+
+///|
+/// Ultimate Oscillator: `100 * (4*avg1 + 2*avg2 + avg3) / 7` over three
+/// buying-pressure ratios (defaults 7 / 14 / 28).
+pub fn ultosc(
+  candles : @base.Candles,
+  p1~ : Int32,
+  p2~ : Int32,
+  p3~ : Int32,
+) -> Array[Double] raise @base.TaError {
+  @momentum.ultosc(candles, p1~, p2~, p3~)
+}
+
 // ---------------------------------------------------------------------------
 // volume — volume-based indicators
 // ---------------------------------------------------------------------------
@@ -447,4 +468,14 @@ pub fn tsf(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @statistic.tsf(data, period)
+}
+
+///|
+/// Rolling Pearson correlation between two series, ranging from -1 to +1.
+pub fn correl(
+  data1 : Array[Double],
+  data2 : Array[Double],
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @statistic.correl(data1, data2, period)
 }

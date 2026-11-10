@@ -16,6 +16,10 @@ pub fn aroon(@base.Candles, Int32) -> AroonResult raise @base.TaError
 
 pub fn aroon_lookback(Int32) -> Int32
 
+pub fn aroonosc(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
+pub fn aroonosc_lookback(Int32) -> Int32
+
 pub fn bop(@base.Candles) -> Array[Double] raise @base.TaError
 
 pub fn cci(@base.Candles, Int32) -> Array[Double] raise @base.TaError
@@ -53,6 +57,10 @@ pub fn stochf(@base.Candles, Int32, d_period~ : Int32) -> Stoch raise @base.TaEr
 pub fn trix(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn trix_lookback(Int32) -> Int32
+
+pub fn ultosc(@base.Candles, p1~ : Int32, p2~ : Int32, p3~ : Int32) -> Array[Double] raise @base.TaError
+
+pub fn ultosc_lookback(Int32) -> Int32
 
 pub fn willr(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 
