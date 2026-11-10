@@ -8,46 +8,35 @@ pub struct Stoch {
 }
 
 ///|
-/// Raw %K at bar `i`: position of the close within the `period`-bar
-/// high/low range, scaled to 0..100. A flat window (highest high equals
-/// lowest low) reads 0; a window containing NaN or a NaN close yields NaN.
-fn fast_k_at(candles : @base.Candles, i : Int32, period : Int32) -> Double {
-  let mut hh = 0.0
-  let mut ll = 0.0
-  let mut first = true
-  let mut valid = true
-  for j in (i - period + 1)..<(i + 1) {
-    let h = candles.high[j]
-    let l = candles.low[j]
-    if @base.is_nan(h) || @base.is_nan(l) {
-      valid = false
-      break
+/// Raw %K series: position of each close within its `period`-bar high/low
+/// range, scaled to 0..100. A flat window (highest high equals lowest low)
+/// reads 0; a window containing NaN or a NaN close yields NaN. Computed in
+/// O(n) via the base rolling extremes.
+fn fast_k_series(
+  candles : @base.Candles,
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  let hh = @base.rolling_max(candles.high, period)
+  let ll = @base.rolling_min(candles.low, period)
+  let n = candles.close.length()
+  let out : Array[Double] = []
+  for i in 0..<n {
+    let c = candles.close[i]
+    if i < period - 1 ||
+      @base.is_nan(c) ||
+      @base.is_nan(hh[i]) ||
+      @base.is_nan(ll[i]) {
+      out.push(@base.nan())
+      continue
     }
-    if first {
-      hh = h
-      ll = l
-      first = false
+    let range = hh[i] - ll[i]
+    if range == 0.0 {
+      out.push(0.0)
     } else {
-      if h > hh {
-        hh = h
-      }
-      if l < ll {
-        ll = l
-      }
+      out.push(100.0 * (c - ll[i]) / range)
     }
   }
-  if !valid {
-    return @base.nan()
-  }
-  let c = candles.close[i]
-  if @base.is_nan(c) {
-    return @base.nan()
-  }
-  let range = hh - ll
-  if range == 0.0 {
-    return 0.0
-  }
-  100.0 * (c - ll) / range
+  out
 }
 
 ///|
@@ -62,15 +51,7 @@ pub fn stochf(
   if period <= 0 || d_period <= 0 {
     raise @base.InvalidPeriod("all periods must be positive")
   }
-  let n = candles.close.length()
-  let k : Array[Double] = []
-  for i in 0..<n {
-    if i < period - 1 {
-      k.push(@base.nan())
-      continue
-    }
-    k.push(fast_k_at(candles, i, period))
-  }
+  let k = fast_k_series(candles, period)
   let d = @overlap.sma(k, d_period)
   { k, d, }
 }
@@ -100,15 +81,7 @@ pub fn stoch(
   if period <= 0 || k_slowing <= 0 || d_period <= 0 {
     raise @base.InvalidPeriod("all periods must be positive")
   }
-  let n = candles.close.length()
-  let fast : Array[Double] = []
-  for i in 0..<n {
-    if i < period - 1 {
-      fast.push(@base.nan())
-      continue
-    }
-    fast.push(fast_k_at(candles, i, period))
-  }
+  let fast = fast_k_series(candles, period)
   let k = @overlap.sma(fast, k_slowing)
   let d = @overlap.sma(k, d_period)
   { k, d, }
@@ -129,18 +102,14 @@ pub fn willr(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @base.validate_candles(candles)
+  let k = fast_k_series(candles, period)
   let n = candles.close.length()
   let out : Array[Double] = []
   for i in 0..<n {
-    if i < period - 1 {
-      out.push(@base.nan())
-      continue
-    }
-    let k = fast_k_at(candles, i, period)
-    if @base.is_nan(k) {
+    if @base.is_nan(k[i]) {
       out.push(@base.nan())
     } else {
-      out.push(k - 100.0)
+      out.push(k[i] - 100.0)
     }
   }
   out
