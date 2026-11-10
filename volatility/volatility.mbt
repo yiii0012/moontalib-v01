@@ -47,8 +47,6 @@ pub fn atr(
   for _ in 0..<period {
     out.push(@base.nan())
   }
-  let pm = (period - 1).to_double()
-  let pd = period.to_double()
   let mut seeded = true
   let mut sum = 0.0
   for i in 1..<(period + 1) {
@@ -59,14 +57,14 @@ pub fn atr(
     }
     sum += t
   }
-  let mut prev = if seeded { sum / pd } else { @base.nan() }
+  let mut prev = if seeded { sum / period.to_double() } else { @base.nan() }
   out.push(prev)
   for i in (period + 1)..<n {
     let t = @base.true_range(candles, i)
     if @base.is_nan(prev) || @base.is_nan(t) {
       prev = @base.nan()
     } else {
-      prev = (prev * pm + t) / pd
+      prev = (prev * (period - 1).to_double() + t) / period.to_double()
     }
     out.push(prev)
   }
@@ -96,25 +94,35 @@ pub fn natr(
 }
 
 ///|
-/// Population variance of the last `period` values (denominator `period`).
-/// A NaN inside the window yields NaN. The caller must guarantee
-/// `period <= data.length()`; otherwise the position reads NaN.
-fn variance_at(data : Array[Double], i : Int32, period : Int32) -> Double {
-  let mut sum = 0.0
-  for j in (i - period + 1)..<(i + 1) {
-    let v = data[j]
-    if @base.is_nan(v) {
-      return @base.nan()
-    }
-    sum += v
+/// Population variance of the last `period` values (denominator `period`),
+/// computed from the rolling sums of y and y^2. Floating-point cancellation
+/// can produce a tiny negative value on flat windows; it is clamped to 0.
+/// NaN sums yield NaN.
+fn variance_from(period : Int32, s1 : Double, s2 : Double) -> Double {
+  if @base.is_nan(s1) || @base.is_nan(s2) {
+    return @base.nan()
   }
-  let mean = sum / period.to_double()
-  let mut acc = 0.0
-  for j in (i - period + 1)..<(i + 1) {
-    let d = data[j] - mean
-    acc += d * d
+  let pd = period.to_double()
+  let mean = s1 / pd
+  let v = (s2 - s1 * mean) / pd
+  if v < 0.0 {
+    0.0
+  } else {
+    v
   }
-  acc / period.to_double()
+}
+
+///|
+/// Rolling sums of `data` and `data^2`, shared by `variance` and `stddev`.
+fn squared_sums(
+  data : Array[Double],
+  period : Int32,
+) -> (Array[Double], Array[Double]) raise @base.TaError {
+  let sq : Array[Double] = []
+  for v in data {
+    sq.push(v * v)
+  }
+  (@base.rolling_sum(data, period), @base.rolling_sum(sq, period))
 }
 
 ///|
@@ -131,6 +139,7 @@ pub fn variance(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @base.validate_series(data, period)
+  let (s1, s2) = squared_sums(data, period)
   let n = data.length()
   let out : Array[Double] = []
   for i in 0..<n {
@@ -138,7 +147,7 @@ pub fn variance(
       out.push(@base.nan())
       continue
     }
-    out.push(variance_at(data, i, period))
+    out.push(variance_from(period, s1[i], s2[i]))
   }
   out
 }
@@ -157,6 +166,7 @@ pub fn stddev(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @base.validate_series(data, period)
+  let (s1, s2) = squared_sums(data, period)
   let n = data.length()
   let out : Array[Double] = []
   for i in 0..<n {
@@ -164,7 +174,7 @@ pub fn stddev(
       out.push(@base.nan())
       continue
     }
-    out.push(variance_at(data, i, period).sqrt())
+    out.push(variance_from(period, s1[i], s2[i]).sqrt())
   }
   out
 }
