@@ -2,24 +2,17 @@
 
 [![CI](https://github.com/yiii0012/moontalib-v01/actions/workflows/ci.yml/badge.svg)](https://github.com/yiii0012/moontalib-v01/actions/workflows/ci.yml)
 
-**moontalib** 是 MoonBit 的技术分析指标库 —— 一个 TA-Lib 风格的工具箱，用于处理股票与加密货币的 OHLCV 行情数据。纯 MoonBit 实现，零第三方依赖，原生 / WASM / JS 三后端可用。
+**moontalib** 是 MoonBit 的技术分析指标库 —— 一个 TA-Lib 风格的工具箱，用于处理股票与加密货币的 OHLCV 行情数据。
+Pure MoonBit, zero third-party dependencies, native / wasm / js.
 
-> TA-Lib-style technical analysis indicator library for MoonBit. Pure MoonBit,
-> zero third-party dependencies, works on native / wasm / js backends.
+## 特性
 
-## 为什么需要它
-
-MoonBit 生态里已经有了行情数据、图表库（moonchart 等）和事件驱动回测引擎
-（moon-certified/finance/backtest 的 QuantStart/Zipline 风格实现），唯独缺
-少中间这一层"行情 → 指标"的纯函数计算库。Zipline 的标准搭档正是 TA-Lib ——
-moontalib 补上的就是这块拼图。
-
-- **指标公式全部有据可依**：语义对齐 TA-Lib（SMA 种子 EMA、Wilder 平滑、
-  总体标准差、0.015 常数 CCI 等），可与其他生态的实现逐值对拍；
-- **全库 65 个单元测试**：每个指标都有手工推演的 golden 值，外加
+- **53 个公开指标函数**，覆盖均线、动量、成交量、波动率与统计五大族，
+  语义对齐 TA-Lib（SMA 种子 EMA、Wilder 平滑、总体标准差、0.015 常数 CCI）；
+- **81 个单元测试**：每个指标都有手工推演的 golden 值，外加
   "MACD = EMA(fast) − EMA(slow)"式的交叉不变量校验；
-- **`moon check` 零警告**：错误处理采用 MoonBit 2026 惯用的
-  `-> T raise TaError` 风格，`pub(all)` 构造可见性、`suberror` 错误类型。
+- **惯用 MoonBit**：错误处理采用 `-> T raise TaError` 风格，
+  `moon check` 零警告，纯函数、零第三方依赖、三后端可用。
 
 ## 指标清单（v0.5，53 个公开函数）
 
@@ -52,13 +45,13 @@ moontalib 补上的就是这块拼图。
 | `stoch` / `stochf` | (p−1)+(ks−1)+(d−1) | 随机指标（慢速 / 快速） |
 | `cci` | n−1 | 顺势指标（0.015 归一化常数） |
 | `trix` | 3(n−1)+1 | 三重 EMA 的百分比变动率 |
-| `adx` | 2n−1 | 平均趋向指数（同时返回 +DI / −DI） |
+| `adx` | 2n−1 | 平均趋向指数（同时返回 +DI / −DI / DX） |
+| `dx` | n | 动向指数 DX：ADX 平滑前的原始比率 |
 | `apo` / `ppo` | slow−1 | 绝对 / 百分比价格振荡器 |
 | `ultosc` | p3 | 终极振荡器（三周期 4:2:1 加权，默认 7/14/28） |
 | `bop` | 0 | 平衡量：(close − open) / (high − low) |
 | `aroon` | n | 阿隆指标（窗口 period+1 根含当前 K 线；并列极值取最近者） |
 | `aroonosc` | n | 阿隆振荡线：up − down |
-| `dx` | n | 动向指数 DX：ADX 平滑前的原始比率 |
 
 ### volume —— 成交量指标
 
@@ -78,17 +71,17 @@ moontalib 补上的就是这块拼图。
 | `natr` | n | 归一化 ATR（占收盘价百分比） |
 | `stddev` / `variance` | n−1 | 滚动总体标准差 / 方差 |
 
-### statistic —— 价格变换与滚动工具
+### statistic —— 价格变换与滚动统计
 
 | 函数 | lookback | 说明 |
 |---|---|---|
 | `avg_price` / `med_price` / `typ_price` / `wcl_price` | 0 | 四种经典价格变换 |
 | `max` / `min` / `sum` | n−1 | 滚动窗口最大 / 最小 / 求和 |
+| `minmax` | n−1 | 滚动极值对（min + max 一次返回） |
+| `avgdev` | n−1 | 滚动平均绝对偏差 |
 | `linearreg_slope` / `linearreg_intercept` | n−1 | 滚动最小二乘的斜率 / 截距 |
 | `linearreg` / `linearreg_angle` / `tsf` | n−1 | 回归端点 / 斜率角度（度） / 前瞻一期预测 |
 | `correl` | n−1 | 滚动皮尔逊相关系数（双序列，-1..+1） |
-| `minmax` | n−1 | 滚动极值对（min + max 一次返回） |
-| `avgdev` | n−1 | 滚动平均绝对偏差 |
 
 每个指标都配有 `xxx_lookback` 辅助函数，返回输出的前导 NaN 个数（`adx`
 等复合指标除外，见各函数文档）。
@@ -96,11 +89,10 @@ moontalib 补上的就是这块拼图。
 ## 安装
 
 ```bash
-# 已发布到 mooncakes 后（把 yiii0012 换成发布者 ID）
 moon add yiii0012/moontalib
 ```
 
-或直接在 `moon.mod` 中声明依赖后运行 `moon update`。
+发布新版本：更新 `moon.mod` 的 `version` 后运行 `moon publish`。
 
 ## 快速开始
 
@@ -125,17 +117,10 @@ fn analyze(candles : @base.Candles) -> Unit raise @base.TaError {
 }
 ```
 
-运行完整演示（120 根合成 K 线，9 个指标的固定宽度表格）：
-
 ```bash
-moon run cmd/demo
-```
-
-## 测试
-
-```bash
-moon check   # 类型检查，零警告
-moon test    # 65 个单元测试（golden 值 + 交叉不变量）
+moon run cmd/demo   # 120 根合成 K 线、9 个指标的固定宽度演示表格
+moon check          # 类型检查，零警告
+moon test           # 81 个单元测试（golden 值 + 交叉不变量）
 ```
 
 ## 语义约定
@@ -150,23 +135,22 @@ moon test    # 65 个单元测试（golden 值 + 交叉不变量）
    `InvalidPeriod`；周期 > 输入长度 → `NotEnoughData`；Candles 列长度
    不一致 → `MismatchedLength`。除这些显式错误外，指标对"数据刚够"的
    情形是宽容的（全 NaN 输出而非报错）。
-5. **EMA 以 SMA 为种子**（TA-Lib 约定）；RSI / ATR / ADX 用 Wilder
-   平滑；`stddev` / `variance` 用总体标准差（分母 n）；CCI 用 0.015
-   归一化常数。平坦窗口的规则在各函数文档中逐个写明（如随机指标
-   hh==ll 读 0、WILLR 由 %R = %K − 100 恒等式得 −100）。
+5. **公式约定对齐参考实现**。EMA 以 SMA 为种子（TA-Lib 约定）；RSI /
+   ATR / ADX 用 Wilder 平滑；`stddev` / `variance` 用总体标准差（分母
+   n）；CCI 用 0.015 归一化常数。平坦窗口的规则在各函数文档中逐个写明
+   （如随机指标 hh==ll 读 0、WILLR 由 %R = %K − 100 恒等式得 −100）。
 
 ## 架构
 
 ```
-moontalib/
-├── moontalib.mbt     门面：import 一次拿到全部指标（@moontalib.sma 等）
-├── base/             Candle/Candles 数据模型、TaError、NaN 与校验原语
-├── overlap/          均线族（SMA/EMA/WMA/HMA/DEMA/TEMA/BBANDS/VWMA）
-├── momentum/         动量族（RSI/MACD/STOCH/CCI/ADX/TRIX/...）
-├── volume/           成交量族（OBV/MFI/AD/ADOSC）
-├── volatility/       波动率族（ATR/NATR/STDDEV/VARIANCE/TRANGE）
-├── statistic/        价格变换与滚动工具
-└── cmd/demo/         可运行示例（moon run cmd/demo）
+moontalib.mbt       门面：import 一次拿到全部指标（@moontalib.sma 等）
+base/               Candle/Candles 数据模型、TaError、NaN 与校验原语
+overlap/            均线族
+momentum/           动量族
+volume/             成交量族
+volatility/         波动率族
+statistic/          价格变换与滚动统计
+cmd/demo/           可运行示例
 ```
 
 依赖方向：`base ← overlap ← momentum`；`base ← volume/volatility/statistic`；
@@ -174,18 +158,10 @@ moontalib/
 
 ## 路线图
 
-- [ ] v0.2：流式 / 增量 API（append-only 缓冲区，O(1) 更新最新值）
-- [ ] v0.2：更多指标（ADX 家族扩展、AROON、BOP、SAR、Ichimoku、K 线形态）
-- [ ] v0.3：O(n) 滚动窗口实现（当前窗口扫描为 O(n·period)，对 ≤ 500 的
-  常用周期完全够用）
-- [ ] v0.3：`Float` 变体与 `FixedArray` 后端（降低 GC 压力）
-
-## 发布
-
-```bash
-moon login        # 填入 mooncakes.io 的 token
-moon publish      # 首次发布前先把 yiii0012 替换成你的 mooncakes 用户名
-```
+- [ ] 流式 / 增量 API（append-only 缓冲区，O(1) 更新最新值）
+- [ ] SAR、Ichimoku、K 线形态识别
+- [ ] O(n) 滚动窗口实现（当前窗口扫描为 O(n·period)，对常用周期完全够用）
+- [ ] `Float` 变体与 `FixedArray` 后端（降低 GC 压力）
 
 ## License
 
