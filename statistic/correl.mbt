@@ -23,47 +23,36 @@ pub fn correl(
     raise @base.MismatchedLength("data1 and data2 must have equal lengths")
   }
   let n = data1.length()
+  // Five O(n) rolling sums feed the Pearson formula; NaN in any window
+  // propagates to NaN through the sums.
+  let sx = @base.rolling_sum(data1, period)
+  let sy = @base.rolling_sum(data2, period)
+  let sq1 : Array[Double] = []
+  let sq2 : Array[Double] = []
+  let prod : Array[Double] = []
+  for i in 0..<n {
+    sq1.push(data1[i] * data1[i])
+    sq2.push(data2[i] * data2[i])
+    prod.push(data1[i] * data2[i])
+  }
+  let sxx = @base.rolling_sum(sq1, period)
+  let syy = @base.rolling_sum(sq2, period)
+  let sxy = @base.rolling_sum(prod, period)
+  let pd = period.to_double()
   let out : Array[Double] = []
   for i in 0..<n {
-    if i < period - 1 {
+    if i < period - 1 || @base.is_nan(sx[i]) || @base.is_nan(sxx[i]) {
       out.push(@base.nan())
       continue
     }
-    let mut s1 = 0.0
-    let mut s2 = 0.0
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let a = data1[j]
-      let b = data2[j]
-      if @base.is_nan(a) || @base.is_nan(b) {
-        valid = false
-        break
-      }
-      s1 += a
-      s2 += b
-    }
-    if !valid {
-      out.push(@base.nan())
-      continue
-    }
-    let pd = period.to_double()
-    let mean1 = s1 / pd
-    let mean2 = s2 / pd
-    let mut num = 0.0
-    let mut den1 = 0.0
-    let mut den2 = 0.0
-    for j in (i - period + 1)..<(i + 1) {
-      let da = data1[j] - mean1
-      let db = data2[j] - mean2
-      num += da * db
-      den1 += da * da
-      den2 += db * db
-    }
-    let den = (den1 * den2).sqrt()
+    let cov = sxy[i] - sx[i] * sy[i] / pd
+    let var1 = sxx[i] - sx[i] * sx[i] / pd
+    let var2 = syy[i] - sy[i] * sy[i] / pd
+    let den = (var1 * var2).sqrt()
     if den == 0.0 {
       out.push(@base.nan())
     } else {
-      out.push(num / den)
+      out.push(cov / den)
     }
   }
   out
