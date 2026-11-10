@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  check-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up MoonBit toolchain
+        uses: hustcer/setup-moonbit@main
+
+      - name: moon check (types + zero warnings)
+        run: moon check
+
+      - name: moon test (65 unit tests)
+        run: moon test
+
+      - name: moon run cmd/demo (smoke test)
+        run: moon run cmd/demo
