@@ -1,0 +1,7 @@
+import {
+  "yiii0012/moontalib",
+  "yiii0012/moontalib/base",
+  "moonbitlang/core/math",
+}
+
+pkgtype(kind: "executable")
