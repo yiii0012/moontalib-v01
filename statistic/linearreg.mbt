@@ -3,15 +3,39 @@
 // the least-squares core `linreg_at`.
 
 ///|
+/// Precomputed per-period regression constants: the mean offset `x_bar`, the
+/// per-offset deviations `dxa` (x - x_bar for offsets 0..period-1) and the
+/// constant denominator `sum(dxa^2)`. All three are bit-identical to the
+/// values the per-window computation produced.
+priv struct LinregWeights {
+  x_bar : Double
+  dxa : FixedArray[Double]
+  den : Double
+}
+
+///|
+fn linreg_weights(period : Int32) -> LinregWeights {
+  let x_bar = (period - 1).to_double() / 2.0
+  let dxa : FixedArray[Double] = FixedArray::make(period, 0.0)
+  let mut den = 0.0
+  for k in 0..<period {
+    let d = k.to_double() - x_bar
+    dxa[k] = d
+    den += d * d
+  }
+  { x_bar, dxa, den, }
+}
+
+///|
 /// Least-squares slope and intercept of the last `period` values ending at
 /// index `i`, using the bar offset 0..period-1 as x. A NaN inside the window
 /// yields (NaN, NaN).
 fn linreg_at(
   data : Array[Double],
   i : Int32,
-  period : Int32,
+  w : LinregWeights,
 ) -> (Double, Double) {
-  let mut sx = 0.0
+  let period = w.dxa.length()
   let mut sy = 0.0
   let mut valid = true
   for j in (i - period + 1)..<(i + 1) {
@@ -20,28 +44,18 @@ fn linreg_at(
       valid = false
       break
     }
-    sx += (j - i + period - 1).to_double()
     sy += y
   }
   if !valid {
     return (@base.nan(), @base.nan())
   }
-  let pd = period.to_double()
-  let x_bar = sx / pd
-  let y_bar = sy / pd
+  let y_bar = sy / period.to_double()
   let mut num = 0.0
-  let mut den = 0.0
   for j in (i - period + 1)..<(i + 1) {
-    let dx = (j - i + period - 1).to_double() - x_bar
-    let dy = data[j] - y_bar
-    num += dx * dy
-    den += dx * dx
+    num += w.dxa[j - i + period - 1] * (data[j] - y_bar)
   }
-  if den == 0.0 {
-    return (@base.nan(), @base.nan())
-  }
-  let slope = num / den
-  (slope, y_bar - slope * x_bar)
+  let slope = num / w.den
+  (slope, y_bar - slope * w.x_bar)
 }
 
 ///|
@@ -55,6 +69,7 @@ pub fn linearreg_slope(
   if period < 2 {
     raise @base.InvalidPeriod("period must be at least 2, got \{period}")
   }
+  let w = linreg_weights(period)
   let n = data.length()
   let out : Array[Double] = []
   for i in 0..<n {
@@ -62,7 +77,7 @@ pub fn linearreg_slope(
       out.push(@base.nan())
       continue
     }
-    let (slope, _) = linreg_at(data, i, period)
+    let (slope, _) = linreg_at(data, i, w)
     out.push(slope)
   }
   out
@@ -78,6 +93,7 @@ pub fn linearreg_intercept(
   if period < 2 {
     raise @base.InvalidPeriod("period must be at least 2, got \{period}")
   }
+  let w = linreg_weights(period)
   let n = data.length()
   let out : Array[Double] = []
   for i in 0..<n {
@@ -85,7 +101,7 @@ pub fn linearreg_intercept(
       out.push(@base.nan())
       continue
     }
-    let (_, intercept) = linreg_at(data, i, period)
+    let (_, intercept) = linreg_at(data, i, w)
     out.push(intercept)
   }
   out
@@ -109,6 +125,7 @@ pub fn linearreg(
   if period < 2 {
     raise @base.InvalidPeriod("period must be at least 2, got \{period}")
   }
+  let w = linreg_weights(period)
   let n = data.length()
   let out : Array[Double] = []
   for i in 0..<n {
@@ -116,7 +133,7 @@ pub fn linearreg(
       out.push(@base.nan())
       continue
     }
-    let (slope, intercept) = linreg_at(data, i, period)
+    let (slope, intercept) = linreg_at(data, i, w)
     if @base.is_nan(slope) {
       out.push(@base.nan())
     } else {
@@ -136,6 +153,7 @@ pub fn linearreg_angle(
   if period < 2 {
     raise @base.InvalidPeriod("period must be at least 2, got \{period}")
   }
+  let w = linreg_weights(period)
   let n = data.length()
   let rad_to_deg = 180.0 / 3.141592653589793
   let out : Array[Double] = []
@@ -144,7 +162,7 @@ pub fn linearreg_angle(
       out.push(@base.nan())
       continue
     }
-    let (slope, _) = linreg_at(data, i, period)
+    let (slope, _) = linreg_at(data, i, w)
     if @base.is_nan(slope) {
       out.push(@base.nan())
     } else {
@@ -165,6 +183,7 @@ pub fn tsf(
   if period < 2 {
     raise @base.InvalidPeriod("period must be at least 2, got \{period}")
   }
+  let w = linreg_weights(period)
   let n = data.length()
   let out : Array[Double] = []
   for i in 0..<n {
@@ -172,7 +191,7 @@ pub fn tsf(
       out.push(@base.nan())
       continue
     }
-    let (slope, intercept) = linreg_at(data, i, period)
+    let (slope, intercept) = linreg_at(data, i, w)
     if @base.is_nan(slope) {
       out.push(@base.nan())
     } else {
