@@ -74,36 +74,31 @@ pub fn ultosc(
       tr.push(fmax(high, prev_close) - fmin(low, prev_close))
     }
   }
-  fn window_sums(i : Int32, p : Int32) -> (Double, Double, Bool) {
-    let mut sum_bp = 0.0
-    let mut sum_tr = 0.0
-    for j in (i - p + 1)..<(i + 1) {
-      let b = bp[j]
-      let t = tr[j]
-      if @base.is_nan(b) || @base.is_nan(t) {
-        return (0.0, 0.0, false)
-      }
-      sum_bp += b
-      sum_tr += t
-    }
-    (sum_bp, sum_tr, true)
-  }
+  // O(n): the six per-period BP/TR window sums come from the base
+  // rolling_sum; NaN windows yield NaN sums and NaN outputs below.
+  let sbp1 = @base.rolling_sum(bp, p1)
+  let str1 = @base.rolling_sum(tr, p1)
+  let sbp2 = @base.rolling_sum(bp, p2)
+  let str2 = @base.rolling_sum(tr, p2)
+  let sbp3 = @base.rolling_sum(bp, p3)
+  let str3 = @base.rolling_sum(tr, p3)
   let out : Array[Double] = []
   for i in 0..<n {
     if i < p3 {
       out.push(@base.nan())
       continue
     }
-    let (bp1, tr1, ok1) = window_sums(i, p1)
-    let (bp2, tr2, ok2) = window_sums(i, p2)
-    let (bp3, tr3, ok3) = window_sums(i, p3)
-    if !ok1 || !ok2 || !ok3 || tr1 == 0.0 || tr2 == 0.0 || tr3 == 0.0 {
+    if @base.is_nan(sbp1[i]) || @base.is_nan(sbp2[i]) || @base.is_nan(sbp3[i]) {
       out.push(@base.nan())
       continue
     }
-    let avg1 = bp1 / tr1
-    let avg2 = bp2 / tr2
-    let avg3 = bp3 / tr3
+    if str1[i] == 0.0 || str2[i] == 0.0 || str3[i] == 0.0 {
+      out.push(@base.nan())
+      continue
+    }
+    let avg1 = sbp1[i] / str1[i]
+    let avg2 = sbp2[i] / str2[i]
+    let avg3 = sbp3[i] / str3[i]
     out.push(100.0 * (4.0 * avg1 + 2.0 * avg2 + avg3) / 7.0)
   }
   out
