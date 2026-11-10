@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0 (2026-11-11)
+
+- perf: the remaining O(n·period) window scans are now O(n) — sma, sum,
+  stddev, variance, bbands, vwma, wma, cmo, mfi, ultosc and correl all run
+  through the base rolling primitives (monotonic deques for extremes, a
+  drift-bounded rolling sum with exact periodic re-accumulation for sums)
+- feat(bench): cmd/bench harness and BENCHMARKS.md with measured
+  before/after numbers (2.9x end-to-end on the reference workload)
+- numerical note: additive windows use a running sum re-accumulated exactly
+  every period bars; sum-of-products formulas (variance/correl) carry a
+  small documented cancellation, clamped where negative values are invalid
+
 ## 0.6.0 (2026-11-11)
 
 - feat(base): O(n) rolling primitives — `rolling_max` / `rolling_min` /
