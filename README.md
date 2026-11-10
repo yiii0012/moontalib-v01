@@ -1,6 +1,6 @@
 # moontalib
 
-[![CI](https://github.com/yiii0012/moontalib/actions/workflows/ci.yml/badge.svg)](https://github.com/yiii0012/moontalib/actions/workflows/ci.yml)
+[![CI](https://github.com/yiii0012/moontalib-v01/actions/workflows/ci.yml/badge.svg)](https://github.com/yiii0012/moontalib-v01/actions/workflows/ci.yml)
 
 **moontalib** 是 MoonBit 的技术分析指标库 —— 一个 TA-Lib 风格的工具箱，用于处理股票与加密货币的 OHLCV 行情数据。纯 MoonBit 实现，零第三方依赖，原生 / WASM / JS 三后端可用。
 
