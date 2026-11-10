@@ -79,45 +79,38 @@ pub fn cmo(
 ) -> Array[Double] raise @base.TaError {
   @base.validate_series(data, period)
   let n = data.length()
-  // Price changes computed once per bar; each window then only sums.
-  let diffs : Array[Double] = []
-  for j in 0..<n {
-    if j == 0 {
-      diffs.push(@base.nan())
-      continue
+  // Signed per-bar changes split into up/down series; each window then only
+  // reads two O(n) rolling sums.
+  let ups : Array[Double] = []
+  let downs : Array[Double] = []
+  ups.push(@base.nan())
+  downs.push(@base.nan())
+  for j in 1..<n {
+    let d = data[j] - data[j - 1]
+    if @base.is_nan(d) {
+      ups.push(@base.nan())
+      downs.push(@base.nan())
+    } else if d > 0.0 {
+      ups.push(d)
+      downs.push(0.0)
+    } else {
+      ups.push(0.0)
+      downs.push(-d)
     }
-    diffs.push(data[j] - data[j - 1])
   }
+  let sum_up = @base.rolling_sum(ups, period)
+  let sum_down = @base.rolling_sum(downs, period)
   let out : Array[Double] = []
   for i in 0..<n {
-    if i < period {
+    if i < period || @base.is_nan(sum_up[i]) {
       out.push(@base.nan())
       continue
     }
-    let mut up = 0.0
-    let mut down = 0.0
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let d = diffs[j]
-      if @base.is_nan(d) {
-        valid = false
-        break
-      }
-      if d > 0.0 {
-        up += d
-      } else {
-        down -= d
-      }
-    }
-    if !valid {
-      out.push(@base.nan())
-      continue
-    }
-    let total = up + down
+    let total = sum_up[i] + sum_down[i]
     if total == 0.0 {
       out.push(0.0)
     } else {
-      out.push(100.0 * (up - down) / total)
+      out.push(100.0 * (sum_up[i] - sum_down[i]) / total)
     }
   }
   out
