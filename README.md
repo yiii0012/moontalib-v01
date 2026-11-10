@@ -158,9 +158,9 @@ cmd/demo/           可运行示例
 
 ## 路线图
 
+- [x] O(n) 滚动极值：max/min/minmax/midprice/midpoint/stoch 族/aroon 族已接入单调队列
 - [ ] 流式 / 增量 API（append-only 缓冲区，O(1) 更新最新值）
 - [ ] SAR、Ichimoku、K 线形态识别
-- [ ] O(n) 滚动窗口实现（当前窗口扫描为 O(n·period)，对常用周期完全够用）
 - [ ] `Float` 变体与 `FixedArray` 后端（降低 GC 压力）
 
 ## License
