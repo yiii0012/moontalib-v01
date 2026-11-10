@@ -26,8 +26,14 @@ pub fn bbands(
   ndev~ : Double,
 ) -> BBands raise @base.TaError {
   @base.validate_series(data, period)
-  let n = data.length()
+  let s1 = @base.rolling_sum(data, period)
+  let sq : Array[Double] = []
+  for v in data {
+    sq.push(v * v)
+  }
+  let s2 = @base.rolling_sum(sq, period)
   let pd = period.to_double()
+  let n = data.length()
   let upper : Array[Double] = []
   let middle : Array[Double] = []
   let lower : Array[Double] = []
@@ -38,30 +44,16 @@ pub fn bbands(
       lower.push(@base.nan())
       continue
     }
-    let mut sum = 0.0
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let v = data[j]
-      if @base.is_nan(v) {
-        valid = false
-        break
-      }
-      sum += v
-    }
-    if !valid {
+    if @base.is_nan(s1[i]) || @base.is_nan(s2[i]) {
       upper.push(@base.nan())
       middle.push(@base.nan())
       lower.push(@base.nan())
       continue
     }
-    let mean = sum / pd
-    let mut acc = 0.0
-    for j in (i - period + 1)..<(i + 1) {
-      let d = data[j] - mean
-      acc += d * d
-    }
-    let sd = (acc / pd).sqrt()
-    let dev = ndev * sd
+    let mean = s1[i] / pd
+    let v = (s2[i] - s1[i] * mean) / pd
+    let varr = if v < 0.0 { 0.0 } else { v }
+    let dev = ndev * varr.sqrt()
     middle.push(mean)
     upper.push(mean + dev)
     lower.push(mean - dev)
@@ -82,30 +74,22 @@ pub fn vwma(
   if volume.length() != price.length() {
     raise @base.MismatchedLength("price and volume must have equal lengths")
   }
+  let pv : Array[Double] = []
+  for i in 0..<price.length() {
+    pv.push(price[i] * volume[i])
+  }
+  let spv = @base.rolling_sum(pv, period)
+  let sv = @base.rolling_sum(volume, period)
   let n = price.length()
   let out : Array[Double] = []
   for i in 0..<n {
-    if i < period - 1 {
+    if i < period - 1 ||
+      @base.is_nan(spv[i]) ||
+      @base.is_nan(sv[i]) ||
+      sv[i] == 0.0 {
       out.push(@base.nan())
-      continue
-    }
-    let mut pv = 0.0
-    let mut vsum = 0.0
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let p = price[j]
-      let v = volume[j]
-      if @base.is_nan(p) || @base.is_nan(v) {
-        valid = false
-        break
-      }
-      pv += p * v
-      vsum += v
-    }
-    if valid && vsum != 0.0 {
-      out.push(pv / vsum)
     } else {
-      out.push(@base.nan())
+      out.push(spv[i] / sv[i])
     }
   }
   out

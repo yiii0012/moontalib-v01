@@ -18,29 +18,10 @@ pub fn sma(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @base.validate_series(data, period)
-  let n = data.length()
+  let out = @base.rolling_sum(data, period)
   let pd = period.to_double()
-  let out : Array[Double] = []
-  for i in 0..<n {
-    if i < period - 1 {
-      out.push(@base.nan())
-      continue
-    }
-    let mut sum = 0.0
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let v = data[j]
-      if @base.is_nan(v) {
-        valid = false
-        break
-      }
-      sum += v
-    }
-    if valid {
-      out.push(sum / pd)
-    } else {
-      out.push(@base.nan())
-    }
+  for i in 0..<out.length() {
+    out[i] = out[i] / pd
   }
   out
 }
@@ -133,29 +114,31 @@ pub fn wma(
   @base.validate_series(data, period)
   let n = data.length()
   let denom = (period * (period + 1) / 2).to_double()
+  let pd = period.to_double()
+  let rsum = @base.rolling_sum(data, period)
   let out : Array[Double] = []
+  let mut acc = @base.nan()
   for i in 0..<n {
-    if i < period - 1 {
+    if i < period - 1 || @base.is_nan(rsum[i]) {
       out.push(@base.nan())
+      acc = @base.nan()
       continue
     }
-    let mut acc = 0.0
-    let mut w = 1.0
-    let mut valid = true
-    for j in (i - period + 1)..<(i + 1) {
-      let v = data[j]
-      if @base.is_nan(v) {
-        valid = false
-        break
+    // Seed exactly at the first full window and every `period` bars after;
+    // otherwise slide the unnormalized sum:
+    // acc(i) = acc(i-1) + period * y[i] - sum(window i-1).
+    if i == period - 1 || (i - (period - 1)) % period == 0 || @base.is_nan(acc) {
+      let mut acc_scan = 0.0
+      let mut weight = 1.0
+      for j in (i - period + 1)..<(i + 1) {
+        acc_scan += data[j] * weight
+        weight += 1.0
       }
-      acc += v * w
-      w += 1.0
-    }
-    if valid {
-      out.push(acc / denom)
+      acc = acc_scan
     } else {
-      out.push(@base.nan())
+      acc = acc + pd * data[i] - rsum[i - 1]
     }
+    out.push(acc / denom)
   }
   out
 }
