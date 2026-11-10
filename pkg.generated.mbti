@@ -16,11 +16,15 @@ pub fn adx(@base.Candles, Int32) -> @momentum.AdxResult raise @base.TaError
 
 pub fn apo(Array[Double], Int32, Int32, ma_type~ : @base.MAType) -> Array[Double] raise @base.TaError
 
+pub fn aroon(@base.Candles, Int32) -> @momentum.AroonResult raise @base.TaError
+
 pub fn atr(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 
 pub fn avg_price(@base.Candles) -> Array[Double] raise @base.TaError
 
 pub fn bbands(Array[Double], Int32, ndev~ : Double) -> @overlap.BBands raise @base.TaError
+
+pub fn bop(@base.Candles) -> Array[Double] raise @base.TaError
 
 pub fn cci(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 
@@ -34,6 +38,14 @@ pub fn ema_from(Array[Double], Int32, Int32) -> Array[Double]
 
 pub fn hma(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
+pub fn linearreg(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn linearreg_angle(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn linearreg_intercept(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn linearreg_slope(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
 pub fn macd(Array[Double], Int32, Int32, Int32) -> @momentum.Macd raise @base.TaError
 
 pub fn max(Array[Double], Int32) -> Array[Double] raise @base.TaError
@@ -41,6 +53,10 @@ pub fn max(Array[Double], Int32) -> Array[Double] raise @base.TaError
 pub fn med_price(@base.Candles) -> Array[Double] raise @base.TaError
 
 pub fn mfi(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
+pub fn midpoint(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn midprice(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 
 pub fn min(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
@@ -73,6 +89,8 @@ pub fn tema(Array[Double], Int32) -> Array[Double] raise @base.TaError
 pub fn tr_range(@base.Candles) -> Array[Double] raise @base.TaError
 
 pub fn trix(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn tsf(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn typ_price(@base.Candles) -> Array[Double] raise @base.TaError
 

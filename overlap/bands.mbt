@@ -110,3 +110,51 @@ pub fn vwma(
   }
   out
 }
+
+///|
+/// Midprice over a rolling candle window: `(highest_high + lowest_low) / 2`.
+/// A NaN inside the window yields NaN.
+pub fn midprice(
+  candles : @base.Candles,
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @base.validate_candles(candles)
+  let n = candles.close.length()
+  let out : Array[Double] = []
+  for i in 0..<n {
+    if i < period - 1 {
+      out.push(@base.nan())
+      continue
+    }
+    let mut hh = 0.0
+    let mut ll = 0.0
+    let mut first = true
+    let mut valid = true
+    for j in (i - period + 1)..<(i + 1) {
+      let h = candles.high[j]
+      let l = candles.low[j]
+      if @base.is_nan(h) || @base.is_nan(l) {
+        valid = false
+        break
+      }
+      if first {
+        hh = h
+        ll = l
+        first = false
+      } else {
+        if h > hh {
+          hh = h
+        }
+        if l < ll {
+          ll = l
+        }
+      }
+    }
+    if valid {
+      out.push((hh + ll) / 2.0)
+    } else {
+      out.push(@base.nan())
+    }
+  }
+  out
+}

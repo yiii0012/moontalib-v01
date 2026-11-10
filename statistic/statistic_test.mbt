@@ -103,3 +103,45 @@ test "statistic functions validate their inputs" {
   assert_eq(err_msg(() => @statistic.max([], 3)), "input series is empty")
   assert_eq(err_msg(() => @statistic.avg_price(one_bar())), "no error")
 }
+
+///|
+test "linear regression family fits the least-squares line" {
+  // data [1, 2, 4]: slope = 1.5, intercept = 5/6, endpoint = 23/6, forecast = 16/3
+  let slope = @statistic.linearreg_slope([1.0, 2.0, 4.0], 3)
+  assert_all_close(slope, nan_prefix(2, [1.5]))
+  let intercept = @statistic.linearreg_intercept([1.0, 2.0, 4.0], 3)
+  assert_all_close(intercept, nan_prefix(2, [0.8333333333333334]))
+  let lr = @statistic.linearreg([1.0, 2.0, 4.0], 3)
+  assert_all_close(lr, nan_prefix(2, [3.8333333333333335]))
+  let tsf = @statistic.tsf([1.0, 2.0, 4.0], 3)
+  assert_all_close(tsf, nan_prefix(2, [5.333333333333333]))
+  let angle = @statistic.linearreg_angle([1.0, 2.0, 4.0], 3)
+  assert_all_close(angle, nan_prefix(2, [56.309932474020215]))
+}
+
+///|
+test "linear regression recovers a perfect line" {
+  let data = [1.0, 2.0, 3.0, 4.0, 5.0]
+  assert_all_close(
+    @statistic.linearreg_slope(data, 3),
+    nan_prefix(2, [1.0, 1.0, 1.0]),
+  )
+  assert_all_close(
+    @statistic.linearreg(data, 3),
+    nan_prefix(2, [3.0, 4.0, 5.0]),
+  )
+  assert_all_close(@statistic.tsf(data, 3), nan_prefix(2, [4.0, 5.0, 6.0]))
+  assert_all_close(
+    @statistic.linearreg_angle(data, 3),
+    nan_prefix(2, [45.0, 45.0, 45.0]),
+  )
+}
+
+///|
+test "linear regression validates its inputs" {
+  assert_eq(err_msg(() => @statistic.linearreg([], 3)), "input series is empty")
+  assert_eq(
+    err_msg(() => @statistic.tsf([1.0], 1)),
+    "invalid period: period must be at least 2, got 1",
+  )
+}

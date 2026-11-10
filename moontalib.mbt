@@ -114,6 +114,15 @@ pub fn midpoint(
   @overlap.midpoint(data, period)
 }
 
+///|
+/// Midprice over a rolling candle window: `(highest_high + lowest_low) / 2`.
+pub fn midprice(
+  candles : @base.Candles,
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @overlap.midprice(candles, period)
+}
+
 // ---------------------------------------------------------------------------
 // momentum — oscillators and rate-of-change measures
 // ---------------------------------------------------------------------------
@@ -393,4 +402,49 @@ pub fn sum(
   period : Int32,
 ) -> Array[Double] raise @base.TaError {
   @statistic.sum(data, period)
+}
+
+///|
+/// Least-squares slope over a rolling window.
+pub fn linearreg_slope(
+  data : Array[Double],
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @statistic.linearreg_slope(data, period)
+}
+
+///|
+/// Least-squares intercept over a rolling window, defined at bar offset 0.
+pub fn linearreg_intercept(
+  data : Array[Double],
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @statistic.linearreg_intercept(data, period)
+}
+
+///|
+/// Linear regression endpoint: the fitted value at the current bar.
+pub fn linearreg(
+  data : Array[Double],
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @statistic.linearreg(data, period)
+}
+
+///|
+/// Linear regression angle in degrees: `atan(slope)` converted from radians.
+pub fn linearreg_angle(
+  data : Array[Double],
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @statistic.linearreg_angle(data, period)
+}
+
+///|
+/// Time series forecast: the regression value one bar beyond the current one.
+pub fn tsf(
+  data : Array[Double],
+  period : Int32,
+) -> Array[Double] raise @base.TaError {
+  @statistic.tsf(data, period)
 }

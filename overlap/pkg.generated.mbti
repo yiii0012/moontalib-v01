@@ -28,6 +28,8 @@ pub fn midpoint(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn midpoint_lookback(Int32) -> Int32
 
+pub fn midprice(@base.Candles, Int32) -> Array[Double] raise @base.TaError
+
 pub fn moving_average(Array[Double], Int32, ma_type~ : @base.MAType) -> Array[Double] raise @base.TaError
 
 pub fn sma(Array[Double], Int32) -> Array[Double] raise @base.TaError

@@ -50,3 +50,15 @@ test "vwma yields NaN when the window volume sums to zero" {
   let out = @overlap.vwma([1.0, 2.0, 3.0, 4.0], [0.0, 0.0, 0.0, 0.0], 2)
   assert_all_close(out, nan_prefix(1, [@base.nan(), @base.nan(), @base.nan()]))
 }
+
+///|
+test "midprice averages the rolling candle extremes" {
+  let candles = bars([
+    (1.0, 3.0, 1.0, 2.0, 10.0),
+    (2.0, 3.0, 2.0, 2.5, 20.0),
+    (1.0, 2.0, 1.0, 1.5, 30.0),
+    (2.0, 5.0, 2.0, 4.0, 40.0),
+  ])
+  let out = @overlap.midprice(candles, 3)
+  assert_all_close(out, nan_prefix(2, [2.0, 3.0]))
+}

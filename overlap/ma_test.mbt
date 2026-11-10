@@ -137,3 +137,20 @@ test "midpoint averages the rolling extremes" {
   assert_all_close(out, nan_prefix(2, [2.0, 3.0, 4.0]))
   assert_eq(@overlap.midpoint_lookback(3), 2)
 }
+
+///|
+fn bars(
+  rows : Array[(Double, Double, Double, Double, Double)],
+) -> @base.Candles {
+  let list : Array[@base.Candle] = []
+  for row in rows {
+    list.push({
+      open: row.0,
+      high: row.1,
+      low: row.2,
+      close: row.3,
+      volume: row.4,
+    })
+  }
+  @base.Candles::from_bars(list)
+}

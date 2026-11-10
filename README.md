@@ -21,7 +21,7 @@ moontalib 补上的就是这块拼图。
 - **`moon check` 零警告**：错误处理采用 MoonBit 2026 惯用的
   `-> T raise TaError` 风格，`pub(all)` 构造可见性、`suberror` 错误类型。
 
-## 指标清单（v0.2，42 个公开函数）
+## 指标清单（v0.3，47 个公开函数）
 
 ### overlap —— 均线与通道
 
@@ -36,6 +36,7 @@ moontalib 补上的就是这块拼图。
 | `bbands` | n−1 | 布林带（总体标准差，上/中/下轨） |
 | `vwma` | n−1 | 成交量加权移动平均 |
 | `midpoint` | n−1 | 滚动中点价：(max + min) / 2 |
+| `midprice` | n−1 | K 线滚动中点价：(最高价 + 最低价) / 2 |
 | `moving_average` | — | SMA/EMA 选择器（APO/PPO 共用） |
 
 ### momentum —— 动量与摆动指标
@@ -80,6 +81,8 @@ moontalib 补上的就是这块拼图。
 |---|---|---|
 | `avg_price` / `med_price` / `typ_price` / `wcl_price` | 0 | 四种经典价格变换 |
 | `max` / `min` / `sum` | n−1 | 滚动窗口最大 / 最小 / 求和 |
+| `linearreg_slope` / `linearreg_intercept` | n−1 | 滚动最小二乘的斜率 / 截距 |
+| `linearreg` / `linearreg_angle` / `tsf` | n−1 | 回归端点 / 斜率角度（度） / 前瞻一期预测 |
 
 每个指标都配有 `xxx_lookback` 辅助函数，返回输出的前导 NaN 个数（`adx`
 等复合指标除外，见各函数文档）。

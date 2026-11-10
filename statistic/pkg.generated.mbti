@@ -8,6 +8,16 @@ import {
 // Values
 pub fn avg_price(@base.Candles) -> Array[Double] raise @base.TaError
 
+pub fn linearreg(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn linearreg_angle(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn linearreg_intercept(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn linearreg_lookback(Int32) -> Int32
+
+pub fn linearreg_slope(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
 pub fn max(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn med_price(@base.Candles) -> Array[Double] raise @base.TaError
@@ -15,6 +25,8 @@ pub fn med_price(@base.Candles) -> Array[Double] raise @base.TaError
 pub fn min(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn sum(Array[Double], Int32) -> Array[Double] raise @base.TaError
+
+pub fn tsf(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn typ_price(@base.Candles) -> Array[Double] raise @base.TaError
 

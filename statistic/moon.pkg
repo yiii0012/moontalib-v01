@@ -1,3 +1,4 @@
 import {
   "yiii0012/moontalib/base",
+  "moonbitlang/core/math",
 }
