@@ -103,6 +103,33 @@ fn run_demo() -> Unit raise @base.TaError {
   println("")
   println("Every output has the same length as the input; positions before an")
   println("indicator's lookback window are NaN and render as \"n/a\".")
+  println("")
+  // Second panel: trend and regression indicators over the same bars.
+  let aroon14 = @moontalib.aroon(candles, 14)
+  let osc14 = @moontalib.aroonosc(candles, 14)
+  let ult = @moontalib.ultosc(candles, p1=7, p2=14, p3=28)
+  let slope14 = @moontalib.linearreg_slope(closes, 14)
+  let tsf14 = @moontalib.tsf(closes, 14)
+  println("trend / regression panel — same 120 bars")
+  println("")
+  println(
+    "   bar |   ADX14 |    +DI |     DX |  AROON | AROONOSC |  ULTOSC | LRSLOPE |   TSF14",
+  )
+  println(
+    "  -----+---------+--------+--------+--------+----------+---------+---------+--------",
+  )
+  for i in start..<n {
+    let mut line = pad("\{i}", 6)
+    line = line + " |" + pad(fmt2(adx14.adx[i]), 8)
+    line = line + " |" + pad(fmt2(adx14.plus_di[i]), 7)
+    line = line + " |" + pad(fmt2(adx14.dx[i]), 7)
+    line = line + " |" + pad(fmt2(aroon14.up[i]), 7)
+    line = line + " |" + pad(fmt2(osc14[i]), 9)
+    line = line + " |" + pad(fmt2(ult[i]), 8)
+    line = line + " |" + pad(fmt2(slope14[i]), 8)
+    line = line + " |" + pad(fmt2(tsf14[i]), 7)
+    println(line)
+  }
 }
 
 ///|
