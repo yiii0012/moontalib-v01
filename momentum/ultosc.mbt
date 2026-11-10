@@ -1,4 +1,7 @@
 // Ultimate Oscillator (Larry Williams): a weighted blend of buying-pressure
+// ratios over three periods.
+//
+// fmin / fmax assume non-NaN inputs; ultosc filters NaN before use.
 
 ///|
 fn fmin(a : Double, b : Double) -> Double {
@@ -17,7 +20,6 @@ fn fmax(a : Double, b : Double) -> Double {
     b
   }
 }
-// ratios over three periods.
 
 ///|
 /// Number of leading NaN values produced by `ultosc`: the longest period
