@@ -47,6 +47,8 @@ pub fn ema_from(Array[Double], Int32, Int32) -> Array[Double]
 
 pub fn hma(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
+pub fn ichimoku(@base.Candles, tenkan~ : Int32, kijun~ : Int32, senkou~ : Int32, displacement~ : Int32) -> @overlap.IchimokuResult raise @base.TaError
+
 pub fn linearreg(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn linearreg_angle(Array[Double], Int32) -> Array[Double] raise @base.TaError
@@ -70,6 +72,8 @@ pub fn midprice(@base.Candles, Int32) -> Array[Double] raise @base.TaError
 pub fn min(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn minmax(Array[Double], Int32) -> @statistic.MinMaxResult raise @base.TaError
+
+pub fn minmaxindex(Array[Double], Int32) -> @statistic.MinMaxIndexResult raise @base.TaError
 
 pub fn mom(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
