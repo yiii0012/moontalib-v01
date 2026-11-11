@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0 (2026-11-12)
+
+- feat(overlap): Ichimoku Kinko Hyo — tenkan/kijun/senkou_a/senkou_b/chikou
+  built on the O(n) rolling extremes with displacement support
+- feat(statistic): minmaxindex — 0-based rolling extreme indices
+  (TA-Lib MINMAXINDEX convention) via rolling_argmax/argmin
+- docs: README catalog extended to 55 public functions
+
 ## 0.7.0 (2026-11-11)
 
 - perf: the remaining O(n·period) window scans are now O(n) — sma, sum,

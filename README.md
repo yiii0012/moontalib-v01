@@ -14,7 +14,7 @@ Pure MoonBit, zero third-party dependencies, native / wasm / js.
 - **惯用 MoonBit**：错误处理采用 `-> T raise TaError` 风格，
   `moon check` 零警告，纯函数、零第三方依赖、三后端可用。
 
-## 指标清单（v0.5，53 个公开函数）
+## 指标清单（v0.8，55 个公开函数）
 
 ### overlap —— 均线与通道
 
@@ -52,6 +52,7 @@ Pure MoonBit, zero third-party dependencies, native / wasm / js.
 | `bop` | 0 | 平衡量：(close − open) / (high − low) |
 | `aroon` | n | 阿隆指标（窗口 period+1 根含当前 K 线；并列极值取最近者） |
 | `aroonosc` | n | 阿隆振荡线：up − down |
+| `ichimoku` | — | 一目均衡表五线（tenkan/kijun/senkou_a/senkou_b/chikou，位移参数） |
 
 ### volume —— 成交量指标
 
@@ -78,6 +79,7 @@ Pure MoonBit, zero third-party dependencies, native / wasm / js.
 | `avg_price` / `med_price` / `typ_price` / `wcl_price` | 0 | 四种经典价格变换 |
 | `max` / `min` / `sum` | n−1 | 滚动窗口最大 / 最小 / 求和 |
 | `minmax` | n−1 | 滚动极值对（min + max 一次返回） |
+| `minmaxindex` | n−1 | 滚动极值索引（最近最大/最小值的 0 基下标） |
 | `avgdev` | n−1 | 滚动平均绝对偏差 |
 | `linearreg_slope` / `linearreg_intercept` | n−1 | 滚动最小二乘的斜率 / 截距 |
 | `linearreg` / `linearreg_angle` / `tsf` | n−1 | 回归端点 / 斜率角度（度） / 前瞻一期预测 |
