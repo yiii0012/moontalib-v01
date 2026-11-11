@@ -160,3 +160,31 @@ pub fn avgdev(
   }
   out
 }
+
+///|
+/// Rolling extreme indices over a window: the 0-based index of the most
+/// recent maximum and minimum, or -1 when the window contains NaN. A NaN
+/// inside the window yields -1 for both.
+pub struct MinMaxIndexResult {
+  min_idx : Array[Int32]
+  max_idx : Array[Int32]
+}
+
+///|
+/// Number of leading sentinel values (-1) produced by `minmaxindex`.
+pub fn minmaxindex_lookback(period : Int32) -> Int32 {
+  period - 1
+}
+
+///|
+/// Indices of the rolling maximum and minimum (TA-Lib `MINMAXINDEX`
+/// convention), computed in O(n) via the base rolling argmax/argmin.
+pub fn minmaxindex(
+  data : Array[Double],
+  period : Int32,
+) -> MinMaxIndexResult raise @base.TaError {
+  @base.validate_series(data, period)
+  let max_idx = @base.rolling_argmax(data, period)
+  let min_idx = @base.rolling_argmin(data, period)
+  { min_idx, max_idx, }
+}
