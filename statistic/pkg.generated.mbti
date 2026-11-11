@@ -36,6 +36,10 @@ pub fn minmax(Array[Double], Int32) -> MinMaxResult raise @base.TaError
 
 pub fn minmax_lookback(Int32) -> Int32
 
+pub fn minmaxindex(Array[Double], Int32) -> MinMaxIndexResult raise @base.TaError
+
+pub fn minmaxindex_lookback(Int32) -> Int32
+
 pub fn sum(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn tsf(Array[Double], Int32) -> Array[Double] raise @base.TaError
@@ -49,6 +53,11 @@ pub fn window_lookback(Int32) -> Int32
 // Errors
 
 // Types and methods
+pub struct MinMaxIndexResult {
+  min_idx : Array[Int32]
+  max_idx : Array[Int32]
+}
+
 pub struct MinMaxResult {
   min : Array[Double]
   max : Array[Double]

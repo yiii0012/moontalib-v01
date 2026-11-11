@@ -185,3 +185,11 @@ test "avgdev is the mean absolute deviation" {
   )
   assert_eq(@statistic.avgdev_lookback(3), 2)
 }
+
+///|
+test "minmaxindex reports the most recent extreme indices" {
+  let r = @statistic.minmaxindex([1.0, 3.0, 2.0, 3.0, 1.0], 3)
+  assert_eq(r.max_idx, [-1, -1, 1, 3, 3])
+  assert_eq(r.min_idx, [-1, -1, 0, 2, 4])
+  assert_eq(@statistic.minmaxindex_lookback(3), 2)
+}
