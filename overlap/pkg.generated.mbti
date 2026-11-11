@@ -24,6 +24,10 @@ pub fn hma(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn hma_lookback(Int32) -> Int32
 
+pub fn ichimoku(@base.Candles, tenkan~ : Int32, kijun~ : Int32, senkou~ : Int32, displacement~ : Int32) -> IchimokuResult raise @base.TaError
+
+pub fn ichimoku_lookback(Int32, Int32) -> Int32
+
 pub fn midpoint(Array[Double], Int32) -> Array[Double] raise @base.TaError
 
 pub fn midpoint_lookback(Int32) -> Int32
@@ -53,6 +57,14 @@ pub struct BBands {
   upper : Array[Double]
   middle : Array[Double]
   lower : Array[Double]
+}
+
+pub struct IchimokuResult {
+  tenkan : Array[Double]
+  kijun : Array[Double]
+  senkou_a : Array[Double]
+  senkou_b : Array[Double]
+  chikou : Array[Double]
 }
 
 // Type aliases

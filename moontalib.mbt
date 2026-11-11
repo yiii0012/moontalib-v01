@@ -506,3 +506,24 @@ pub fn avgdev(
 ) -> Array[Double] raise @base.TaError {
   @statistic.avgdev(data, period)
 }
+
+///|
+/// Ichimoku Kinko Hyo: tenkan, kijun, senkou_a, senkou_b and chikou lines.
+pub fn ichimoku(
+  candles : @base.Candles,
+  tenkan~ : Int32,
+  kijun~ : Int32,
+  senkou~ : Int32,
+  displacement~ : Int32,
+) -> @overlap.IchimokuResult raise @base.TaError {
+  @overlap.ichimoku(candles, tenkan~, kijun~, senkou~, displacement~)
+}
+
+///|
+/// Indices of the rolling maximum and minimum over a window.
+pub fn minmaxindex(
+  data : Array[Double],
+  period : Int32,
+) -> @statistic.MinMaxIndexResult raise @base.TaError {
+  @statistic.minmaxindex(data, period)
+}
