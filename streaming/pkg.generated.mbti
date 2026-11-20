@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "yiii0012/moontalib/streaming"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct EmaStream {
+  // private fields
+}
+pub fn EmaStream::new(Int32) -> Self
+pub fn EmaStream::push(Self, Double) -> Double
+
+pub struct RsiStream {
+  // private fields
+}
+pub fn RsiStream::new(Int32) -> Self
+pub fn RsiStream::push(Self, Double) -> Double
+
+pub struct SmaStream {
+  // private fields
+}
+pub fn SmaStream::new(Int32) -> Self
+pub fn SmaStream::push(Self, Double) -> Double
+
+// Type aliases
+
+// Traits

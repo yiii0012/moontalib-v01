@@ -1,0 +1,7 @@
+import {
+  "yiii0012/moontalib/base",
+}
+
+import {
+  "yiii0012/moontalib",
+} for "test"
