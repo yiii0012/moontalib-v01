@@ -7,16 +7,20 @@ Pure MoonBit, zero third-party dependencies, native / wasm / js.
 
 ## 特性
 
-- **53 个公开指标函数**，覆盖均线、动量、成交量、波动率与统计五大族，
-  语义对齐 TA-Lib（SMA 种子 EMA、Wilder 平滑、总体标准差、0.015 常数 CCI）；
-- **81 个单元测试**：每个指标都有手工推演的 golden 值，外加
-  "MACD = EMA(fast) − EMA(slow)"式的交叉不变量校验；
+- **55 个公开指标函数**，覆盖均线、动量、成交量、波动率与统计五大族，
+  计算语义遵循 TA-Lib 公开文档的约定（SMA 种子 EMA、Wilder 平滑、总体标准
+  差、0.015 常数 CCI）；
+- **三层验证，101 个单元测试**：手算 golden 值与交叉不变量、独立
+  pandas/pandas-ta 参考实现逐值对拍（54 组 fixtures，生成脚本入仓可复现，
+  见 goldendata/README.md）、300 根长序列全门面冒烟；
+- **流式增量 API**：SmaStream/EmaStream/RsiStream 逐根推送，输出与批量
+  函数完全一致（含 NaN 污染与恢复路径），见 docs/streaming.md；
 - **惯用 MoonBit**：错误处理采用 `-> T raise TaError` 风格，
   `moon check` 零警告，纯函数、零第三方依赖、三后端可用。
 
-## 指标清单（v0.8，55 个公开函数）
+## 指标清单（v0.9，55 个公开函数）
 
-### overlap —— 均线与通道
+### overlap —— 均线与通道（含一目均衡表）
 
 | 函数 | lookback | 说明 |
 |---|---|---|
@@ -120,9 +124,9 @@ fn analyze(candles : @base.Candles) -> Unit raise @base.TaError {
 ```
 
 ```bash
-moon run cmd/demo   # 120 根合成 K 线、9 个指标的固定宽度演示表格
+moon run cmd/demo   # 120 根合成 K 线、双面板演示表格
 moon check          # 类型检查，零警告
-moon test           # 81 个单元测试（golden 值 + 交叉不变量）
+moon test           # 101 个单元测试（golden 对拍 + 独立对照 + 不变量 + 冒烟）
 ```
 
 ## 语义约定
