@@ -1,0 +1,119 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "yiii0012/moontalib/goldendata"
+
+// Values
+pub let pd_ad : Array[Double]
+
+pub let pd_adosc : Array[Double]
+
+pub let pd_apo : Array[Double]
+
+pub let pd_aroon_down14 : Array[Double]
+
+pub let pd_aroon_up14 : Array[Double]
+
+pub let pd_aroonosc14 : Array[Double]
+
+pub let pd_atr14 : Array[Double]
+
+pub let pd_avgdev20 : Array[Double]
+
+pub let pd_bbands_lo : Array[Double]
+
+pub let pd_bbands_mid : Array[Double]
+
+pub let pd_bbands_up : Array[Double]
+
+pub let pd_bop : Array[Double]
+
+pub let pd_cci14 : Array[Double]
+
+pub let pd_cmo14 : Array[Double]
+
+pub let pd_correl20 : Array[Double]
+
+pub let pd_dema20 : Array[Double]
+
+pub let pd_dx14 : Array[Double]
+
+pub let pd_ema20 : Array[Double]
+
+pub let pd_hma20 : Array[Double]
+
+pub let pd_linearreg20 : Array[Double]
+
+pub let pd_linearreg_angle20 : Array[Double]
+
+pub let pd_linearreg_intercept20 : Array[Double]
+
+pub let pd_linearreg_slope20 : Array[Double]
+
+pub let pd_macd : Array[Double]
+
+pub let pd_macd_hist : Array[Double]
+
+pub let pd_macd_signal : Array[Double]
+
+pub let pd_max20 : Array[Double]
+
+pub let pd_mfi14 : Array[Double]
+
+pub let pd_midpoint20 : Array[Double]
+
+pub let pd_midprice20 : Array[Double]
+
+pub let pd_min20 : Array[Double]
+
+pub let pd_minmaxindex_max : Array[Int32]
+
+pub let pd_minmaxindex_min : Array[Int32]
+
+pub let pd_mom10 : Array[Double]
+
+pub let pd_natr14 : Array[Double]
+
+pub let pd_obv : Array[Double]
+
+pub let pd_ppo : Array[Double]
+
+pub let pd_roc10 : Array[Double]
+
+pub let pd_rsi14 : Array[Double]
+
+pub let pd_sma20 : Array[Double]
+
+pub let pd_stdev20 : Array[Double]
+
+pub let pd_stochd3 : Array[Double]
+
+pub let pd_stochf_d : Array[Double]
+
+pub let pd_stochk : Array[Double]
+
+pub let pd_sum20 : Array[Double]
+
+pub let pd_tema20 : Array[Double]
+
+pub let pd_trange : Array[Double]
+
+pub let pd_trix10 : Array[Double]
+
+pub let pd_tsf20 : Array[Double]
+
+pub let pd_ultosc : Array[Double]
+
+pub let pd_var20 : Array[Double]
+
+pub let pd_vwma20 : Array[Double]
+
+pub let pd_willr14 : Array[Double]
+
+pub let pd_wma20 : Array[Double]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
