@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.0 (2026-11-12)
+
+- feat(streaming): incremental SMA/EMA/RSI evaluators with push-per-bar
+  semantics identical to the batch functions (verified by consistency
+  tests over a 300-bar series, including NaN recovery)
+- docs(streaming): update semantics, complexity and usage guide
+- test: streaming batch-consistency suite (4 tests)
+- package: new  subpackage
+
 ## 0.8.0 (2026-11-12)
 
 - feat(overlap): Ichimoku Kinko Hyo — tenkan/kijun/senkou_a/senkou_b/chikou
