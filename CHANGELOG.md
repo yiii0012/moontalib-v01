@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.0 (2026-11-23)
+
+- feat(streaming): four new incremental evaluators — StochStream (slow
+  %K/%D on O(1) monotonic deques), AtrStream (Wilder TR), ObvStream,
+  BollingerStream (running y/y^2 sums with drift-bounded re-accumulation)
+  — all verified against the batch functions at 1e-9 over a 300-bar series
+- fix(streaming): StochStream deque maintenance — ring write slot now
+  derives from the bar index and deque entries are inserted at the
+  post-pop tail (previously corrupted after the first back-pop)
+- test(streaming): 4 batch-consistency tests (stoch/atr/obv/bollinger),
+  suite grows to 105
+- docs(streaming): coverage table extends to 7 evaluators
+
 ## 0.9.0 (2026-11-12)
 
 - feat(streaming): incremental SMA/EMA/RSI evaluators with push-per-bar

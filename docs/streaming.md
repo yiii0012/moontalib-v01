@@ -41,7 +41,7 @@ fn demo(candles : @base.Candles) -> Unit {
 | 语义项 | 流式行为 | 批量对应 |
 |---|---|---|
 | 预热 | 推送数 < period 时返回 NaN | 输出前 lookback 个位置为 NaN |
-| 首个有效值 | SMA/EMA 在第 period 次 push；RSI 在第 period+1 次 push | 批量输出在同一下标首次出现 |
+| 首个有效值 | SMA/EMA 在第 period 次 push；RSI/ATR 在第 period+1 次 push；Stoch 的 raw %K 在第 period 次、slow %K 再加 k_slowing−1、%D 再加 d_period−1；布林带在第 period 次 push；OBV 从第 1 次 push 起 | 批量输出在同一下标首次出现 |
 | 种子 | SMA/EMA 用前 period 个值的均值作种子（TA-Lib 约定）；RSI 用前 p 个变动的均值 | 与批量完全相同的种子公式 |
 | 递推 | 之后每次 push 应用一次递推步 | 与批量逐位置相同 |
 | NaN 输入 | 窗口被污染 → NaN；污染 bar 离开窗口后**在同一下标**精确恢复（重新累加） | 批量在同一下标恢复 |
@@ -54,21 +54,26 @@ fn demo(candles : @base.Candles) -> Unit {
 | `SmaStream` | 窗口和（环形缓冲 + 漂移有界的重累加） | O(1) |
 | `EmaStream` | SMA 种子 + 递推 | O(1) |
 | `RsiStream` | Wilder 递推（SMA 种子） | O(1) |
+| `StochStream` | 双单调队列滚动极值（raw %K）+ 级联 SMA（slow %K / %D） | O(1) |
+| `AtrStream` | Wilder 递推（TR 种子 = 前 p 个 TR 均值） | O(1) |
+| `ObvStream` | 符号累计和 | O(1) |
+| `BollingerStream` | y/y² 双滚动和（消减钳制 + 漂移有界重累加） | O(1) |
 
-后继版本将按相同的"与批量一致"测试模式扩展到 Stoch、Aroon、ADX 等多输
+后继版本将按相同的"与批量一致"测试模式扩展到 MACD、Aroon、ADX 等多输
 出指标。
 
 ## 一致性保证是怎么测的
 
 `streaming_test.mbt` 将 300 根确定性 zig-zag 行情逐根推入各求值器，把收
-集到的输出与批量函数（`@moontalib.sma` / `@moontalib.ema` / `@moontalib.rsi`）
-在全部 300 个位置上做 1e-9 容差对拍——包括第 150/151 根人为注入的 NaN
-bar，验证污染与恢复行为在流式与批量两侧完全一致。任何偏离都会在 CI 中
-失败。
+集到的输出与对应的批量函数（`@moontalib.sma` / `@moontalib.ema` /
+`@moontalib.rsi` / `@moontalib.stoch` / `@moontalib.atr` / `@moontalib.obv` /
+`@moontalib.bbands`）在全部 300 个位置上做 1e-9 容差对拍——SMA/EMA/RSI
+的用例还包括第 150/151 根人为注入的 NaN bar，验证污染与恢复行为在流式
+与批量两侧完全一致。任何偏离都会在 CI 中失败。
 
 ## 已知边界
 
-- RSI 流式在 push 期间收到 NaN close 时，后续输出保持 NaN（与批量的
-  NaN 传播语义一致），直到……与批量相同：不会自动恢复（RSI 的递推在
-  批量侧同样是 NaN 永久传播），推送有效数据前请自行过滤。
-- 多输出指标（布林带、MACD、Stoch）的流式版本在路线图中。
+- RSI / ATR 流式在 push 期间收到 NaN 时，后续输出保持 NaN（与批量的
+  NaN 传播语义一致：递推被污染后不会自动恢复），推送有效数据前请自行
+  过滤。
+- 多输出指标 MACD 的流式版本在路线图中（Stoch 与布林带本版本已覆盖）。
