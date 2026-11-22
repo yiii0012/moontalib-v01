@@ -6,11 +6,35 @@ package "yiii0012/moontalib/streaming"
 // Errors
 
 // Types and methods
+pub struct AtrStream {
+  // private fields
+}
+pub fn AtrStream::new(Int32) -> Self
+pub fn AtrStream::push(Self, Double, Double, Double) -> Double
+
+pub struct BollingerBar {
+  middle : Double
+  upper : Double
+  lower : Double
+}
+
+pub struct BollingerStream {
+  // private fields
+}
+pub fn BollingerStream::new(Int32) -> Self
+pub fn BollingerStream::push(Self, Double) -> BollingerBar
+
 pub struct EmaStream {
   // private fields
 }
 pub fn EmaStream::new(Int32) -> Self
 pub fn EmaStream::push(Self, Double) -> Double
+
+pub struct ObvStream {
+  // private fields
+}
+pub fn ObvStream::new() -> Self
+pub fn ObvStream::push(Self, Double, Double) -> Double
 
 pub struct RsiStream {
   // private fields
@@ -23,6 +47,17 @@ pub struct SmaStream {
 }
 pub fn SmaStream::new(Int32) -> Self
 pub fn SmaStream::push(Self, Double) -> Double
+
+pub struct StochBar {
+  k : Double
+  d : Double
+}
+
+pub struct StochStream {
+  // private fields
+}
+pub fn StochStream::new(Int32, k_slowing~ : Int32, d_period~ : Int32) -> Self
+pub fn StochStream::push(Self, Double, Double, Double) -> StochBar
 
 // Type aliases
 
